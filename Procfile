@@ -1,1 +1,1 @@
-web: gunicorn ecomm.wsgi --log-file -
+web: gunicorn speedtech.wsgi --log-file -
