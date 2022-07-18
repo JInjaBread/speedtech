@@ -55,7 +55,6 @@ def add_company(request):
         name = request.POST.get('name')
 
         image_file = request.FILES['file']
-
     try:
         company = Company(name=name, image = image_file)
         company.save()
