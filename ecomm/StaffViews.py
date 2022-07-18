@@ -107,7 +107,7 @@ def motorcycle(request):
     }
     return render(request, 'staff/motorcycle.html', context)
 
-def add_company(request):
+def add_motorcycle(request):
     if request.method != "POST":
         messages.error(request, "Invalid Method ")
         return redirect('company')

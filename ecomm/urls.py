@@ -30,6 +30,7 @@ urlpatterns = [
 	path('add_company', StaffViews.add_company, name="add_company"),
 	path('edit_company/<company_id>', StaffViews.edit_company, name="edit_company"),
 	path('motorcycle', StaffViews.motorcycle, name="motorcycle"),
+	path('add_motorcycle', StaffViews.add_motorcycle, name="add_motorcycle"),
 	path('products', StaffViews.products, name="products"),
 	path('save_products', StaffViews.save_products, name="save_products"),
 	path('orders', StaffViews.orders, name="orders"),
