@@ -58,7 +58,7 @@
                   {% for order in order %}
                     <div class="col">
                         <div class="card cards-shadown cards-hover" data-aos="flip-left" data-aos-duration="950">
-                            <div class="card-header"><button class="btn btn-primary" type="button" style="background: rgb(254,0,2);border-color: rgb(254,0,2);"><i class="fa fa-trash" id="download-icon-1"></i></button><span class="space"><a href="#"></a></span>
+                            <div class="card-header"><a class="btn btn-primary" href="{% url 'cancel_order' order.id %}" type="button" ><i class="fa fa-trash" id="download-icon-1"></i></a><span class="space"><a href="#"></a></span>
                                 <div class="cardheader-text">
                                     <h4 id="heading-card-1">{{ order.user.admin.first_name }} {{ order.user.admin.last_name }}</h4>
                                     <p id="cardheader-subtext-1">Ref Code: {{ order.ref_code }}</p>
@@ -69,7 +69,7 @@
                                 <p class="card-text sub-text-color">{{ order.date }}</p>
                                 <p class="card-text cardbody-sub-text">₱ {{ order.total|floatformat:2 }}</p>
                                 {% if order.status == "Packaging" %}
-                                  <a class="btn btn-primary text-nowrap" href="{% url 'cancel_order' order.id %}" style="background: rgb(254,0,2);border-color: rgb(254,0,2);">Ready For Pick Up</a>
+                                  <a class="btn btn-primary text-nowrap" href="{% url 'set_ready' order.id %}" style="background: rgb(254,0,2);border-color: rgb(254,0,2);">Ready For Pick Up</a>
                                 {% else %}
                                   <a class="btn btn-primary text-nowrap" href="{% url 'set_complete' order.id %}" style="background: rgb(254,0,2);border-color: rgb(254,0,2);">Mark as Complete</a>
                                 {% endif %}
