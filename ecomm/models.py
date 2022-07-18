@@ -48,7 +48,7 @@ class Company(models.Model):
 class Motorcycle(models.Model):
     name = models.CharField(max_length=255)
     image = models.ImageField(upload_to='motorcycle')
-    company = models.ForeignKey(Company, on_delete=models.DO_NOTHING)
+    company = models.ForeignKey(Company, on_delete=models.DO_NOTHING, related_name='motorcycle')
     objects = models.Manager()
 
     def __str__(self):
@@ -65,7 +65,6 @@ class Category(models.Model):
 class Product(models.Model):
     name = models.CharField(max_length=255)
     image = models.ImageField(upload_to='product')
-    old_price = models.FloatField(null=True)
     price = models.FloatField()
     stock = models.IntegerField()
     motorcycle = models.ForeignKey(Motorcycle, on_delete=models.DO_NOTHING)
@@ -84,7 +83,7 @@ class OrderItem(models.Model):
     quantity = models.IntegerField(default=1)
 
     def __str__(self):
-        return f"{self.quantity} x {self.item.name}"
+        return f"({self.quantity}x){self.item.name}"
 
     def get_total_item_price(self):
         return self.quantity * self.item.price
@@ -97,6 +96,9 @@ class Order(models.Model):
     total = models.FloatField(default=0.0)
     ordered_date = models.DateTimeField(auto_now_add=True)
     ordered = models.BooleanField(default=False)
+
+    def split_order(self):
+        return self.items.split(",")
 
 
 @receiver(post_save, sender=CustomUser)

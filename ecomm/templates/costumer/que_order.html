@@ -1,0 +1,108 @@
+{% extends 'costumer/base.html' %}
+{% load static %}
+{% block content %}
+{% if messages %}
+  {% for message in messages %}
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="liveToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <strong class="me-auto">Speedtech</strong>
+        <small>Just Now</small>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        {{ message }}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+{% endif %}
+<div class="profile-card">
+      <div class="profile-back" style="background: rgb(254,0,2);"></div><img class="rounded-circle profile-pic" src="{% static 'costumer_templates/assets/img/150607784_1734378716914298_4521171664303503947_n.jpg' %}">
+      <h3 class="profile-name" style="background: rgb(254,0,2);">BICOL SPEEDTECH MOTOR CORP.&nbsp;</h3>
+      <p class="profile-bio">We sell motorcycle parts!</p>
+      <ul class="social-list">
+          <li> <i class="fa fa-facebook-official" style="background: rgb(254,0,2);"></i></li>
+          <li> <i class="fa fa-envelope" style="background: rgb(254,0,2);"></i></li>
+          <li> <i class="fa fa-phone-square" style="background: rgb(254,0,2);"></i></li>
+      </ul>
+  </div>
+  <div class="container">
+    <div class="row">
+        <div class="col">
+          <a class="btn-circle" href="{% url 'costumer_home' %}" style="margin-right: 0px;margin-left: 6px;"><i class="fa fa-home" style="color: #fe0002;font-size: 30px;"></i></a>
+          <a class="btn-circle" href="{% url 'cart' %}" style="margin-right: 0px;margin-left: 6px;" type="button"><i class="fa fa-shopping-cart" style="color: #fe0002;font-size: 30px;"></i><span class="badge bg-primary text-start float-end" style="background: var(--bs-pink);border-color: var(--bs-purple);">{{ cart.count }}</span></a>
+          <a class="btn-circle" href="{% url 'order' %}" style="margin-right: 0px;margin-left: 6px;" type="button"><i class="fa fa-inbox" style="color: #fe0002;font-size: 30px;"></i><span class="badge bg-primary text-start float-end" style="background: var(--bs-pink);border-color: var(--bs-purple);">{{ order_count }}</span></a>
+          <a class="btn-circle dropdown-toggle" type="button"id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 0px;background: #ffffff;border: 1px none;margin-right: 0px;margin-left: 6px;" type="button"><i class="fa fa-user" style="color: #fe0002;font-size: 30px;"></i></a>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li><a class="dropdown-item" href="#">Logout</a></li>
+          </ul>
+        </div>
+        </div>
+      <div class="row">
+        <div class="col-md-12">
+          <section class="h-100 h-custom">
+              <div class="container py-5 h-100">
+              <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-lg-8 col-xl-6">
+                  {% for order in order_obj %}
+                    <div class="card border-top border-bottom border-3" style="border-color: rgb(254,0,2) !important;">
+                      <div class="card-body p-5">
+
+                        <p class="lead fw-bold mb-5" style="color: #f37a27;">Que Order</p>
+
+                        <div class="row">
+                          <div class="col mb-3">
+                            <p class="small text-muted mb-1">Status</p>
+                            <p>{{ order.status }}</p>
+                          </div>
+                          <div class="col mb-3">
+                            <p class="small text-muted mb-1">Ref Code.</p>
+                            <p>{{ order.ref_code }}</p>
+                          </div>
+                        </div>
+
+                        <div class="mx-n5 px-5 py-4" style="background-color: #f2f2f2;">
+                          <div class="row">
+                            <div class="col-md-8 col-lg-9">
+                              {% for order in order.split_order %}
+                                <p>{{ order }}</p>
+                              {% endfor %}
+                            </div>
+                            <div class="col-md-4 col-lg-3">
+                              <p>₱ {{ order.total|floatformat:2 }}</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="row my-4">
+                          <div class="col-md-4 offset-md-8 col-lg-3 offset-lg-9">
+                            <p class="lead fw-bold mb-0" style="color: #f37a27;">₱ {{ order.total|floatformat:2 }}</p>
+                          </div>
+                        </div>
+
+                        <div class="row">
+                          <div class="col-lg-12">
+
+                            <div class="horizontal-timeline">
+
+                            </div>
+
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+              </div>
+              </section>
+          </div>
+      </div>
+  </div>
+{% endblock %}
+
+{% block custom_js %}
+
+{% endblock custom_js %}

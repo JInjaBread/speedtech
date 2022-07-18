@@ -1,0 +1,58 @@
+@media (min-width: 1025px) {
+.h-custom {
+height: 100vh !important;
+}
+}
+
+.card-registration .select-input.form-control[readonly]:not([disabled]) {
+font-size: 1rem;
+line-height: 2.15;
+padding-left: .75em;
+padding-right: .75em;
+}
+
+.card-registration .select-arrow {
+top: 13px;
+}
+
+.bg-grey {
+background-color: #eae8e8;
+}
+
+@media (min-width: 992px) {
+.card-registration-2 .bg-grey {
+border-top-right-radius: 16px;
+border-bottom-right-radius: 16px;
+}
+}
+
+@media (max-width: 991px) {
+.card-registration-2 .bg-grey {
+border-bottom-left-radius: 16px;
+border-bottom-right-radius: 16px;
+}
+}
+
+.horizontal-timeline .items {
+border-top: 2px solid #ddd;
+}
+
+.horizontal-timeline .items .items-list {
+position: relative;
+margin-right: 0;
+}
+
+.horizontal-timeline .items .items-list:before {
+content: "";
+position: absolute;
+height: 8px;
+width: 8px;
+border-radius: 50%;
+background-color: #ddd;
+top: 0;
+margin-top: -5px;
+}
+
+.horizontal-timeline .items .items-list {
+padding-top: 15px;
+}

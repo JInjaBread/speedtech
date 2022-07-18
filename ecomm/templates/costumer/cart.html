@@ -1,0 +1,146 @@
+{% extends 'costumer/base.html' %}
+{% load static %}
+{% block content %}
+{% if messages %}
+  {% for message in messages %}
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="liveToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <strong class="me-auto">Speedtech</strong>
+        <small>Just Now</small>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        {{ message }}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+{% endif %}
+<div class="profile-card">
+      <div class="profile-back" style="background: rgb(254,0,2);"></div><img class="rounded-circle profile-pic" src="{% static 'costumer_templates/assets/img/150607784_1734378716914298_4521171664303503947_n.jpg' %}">
+      <h3 class="profile-name" style="background: rgb(254,0,2);">BICOL SPEEDTECH MOTOR CORP.&nbsp;</h3>
+      <p class="profile-bio">We sell motorcycle parts!</p>
+      <ul class="social-list">
+          <li> <i class="fa fa-facebook-official" style="background: rgb(254,0,2);"></i></li>
+          <li> <i class="fa fa-envelope" style="background: rgb(254,0,2);"></i></li>
+          <li> <i class="fa fa-phone-square" style="background: rgb(254,0,2);"></i></li>
+      </ul>
+  </div>
+  <div class="container">
+      <div class="row">
+          <div class="col">
+            <a class="btn-circle" href="{% url 'costumer_home' %}" style="margin-right: 0px;margin-left: 6px;"><i class="fa fa-home" style="color: #fe0002;font-size: 30px;"></i></a>
+            <a class="btn-circle" href="{% url 'cart' %}" style="margin-right: 0px;margin-left: 6px;" type="button"><i class="fa fa-shopping-cart" style="color: #fe0002;font-size: 30px;"></i><span class="badge bg-primary text-start float-end" style="background: var(--bs-pink);border-color: var(--bs-purple);">{{ cart.count }}</span></a>
+            <a class="btn-circle" href="{% url 'order' %}" style="margin-right: 0px;margin-left: 6px;" type="button"><i class="fa fa-inbox" style="color: #fe0002;font-size: 30px;"></i><span class="badge bg-primary text-start float-end" style="background: var(--bs-pink);border-color: var(--bs-purple);">{{ order_count }}</span></a>
+            <a class="btn-circle dropdown-toggle" type="button"id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 0px;background: #ffffff;border: 1px none;margin-right: 0px;margin-left: 6px;" type="button"><i class="fa fa-user" style="color: #fe0002;font-size: 30px;"></i></a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <li><a class="dropdown-item" href="#">Profile</a></li>
+              <li><a class="dropdown-item" href="#">Logout</a></li>
+            </ul>
+          </div>
+          </div>
+      <div class="row">
+        <div class="col-md-12">
+              <section class="h-100 h-custom">
+                  <div class="container py-5 h-100">
+                    <div class="row d-flex justify-content-center align-items-center h-100">
+                      <div class="col-12">
+                        <div class="card card-registration card-registration-2" style="border-radius: 15px;">
+                          <div class="card-body p-0">
+                            <div class="row g-0">
+                              <div class="col-lg-8">
+                                <div class="p-5">
+                                  <div class="d-flex justify-content-between align-items-center mb-5">
+                                    <h1 class="fw-bold mb-0 text-black">Shopping Cart</h1>
+                                    <h6 class="mb-0 text-muted">{{ cart.count }} items</h6>
+                                  </div>
+                                  <hr class="my-4">
+
+                                  {% for item in cart %}
+                                    <form class="" action="{% url 'update_cart' item.id %}" method="post">
+                                      {% csrf_token %}
+                                      <div class="row mb-4 d-flex justify-content-between align-items-center">
+                                        <div class="col-md-2 col-lg-2 col-xl-2">
+                                          <img
+                                            src="{{ item.item.image.url }}"
+                                            class="img-fluid rounded-3" alt="Cotton T-shirt">
+                                        </div>
+                                        <div class="col-md-3 col-lg-3 col-xl-3">
+                                          <h6 class="text-muted">{{ item.item.category }}</h6>
+                                          <h6 class="text-black mb-0">{{ item.item.name }}</h6>
+                                        </div>
+                                        <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
+                                          <button class="btn btn-link px-2"
+                                            onclick="this.parentNode.querySelector('input[type=number]').stepDown()" type="button">
+                                            <i class="fa fa-minus"></i>
+                                          </button>
+
+                                          <input id="form1" min="0" name="quantity" value="{{ item.quantity }}" type="number"
+                                            class="form-control form-control-sm" />
+
+                                          <button class="btn btn-link px-2"
+                                            onclick="this.parentNode.querySelector('input[type=number]').stepUp()" type="button">
+                                            <i class="fa fa-plus"></i>
+                                          </button>
+                                        </div>
+                                        <div class="col-md-1 col-lg-1 col-xl-1">
+                                          <button href="#!" class="btn text-muted" type="submit">Update</button>
+                                        </div>
+                                        <div class="col-md-1 col-lg-1 col-xl-1 text-end">
+                                          <a href="{% url 'remove_from_cart' item.id %}" class="text-muted"><i class="fa fa-times"></i></a>
+                                        </div>
+                                      </div>
+                                    </form>
+                                  {% endfor %}
+
+                                  <hr class="my-4">
+
+                                  <div class="pt-5">
+                                    <h6 class="mb-0"><a href="{% url 'costumer_home' %}" class="text-body"><i
+                                          class="fas fa-long-arrow-alt-left me-2"></i>Back to shop</a></h6>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-lg-4 bg-grey">
+                                <div class="p-5">
+                                  <h3 class="fw-bold mb-5 mt-2 pt-1">Summary</h3>
+                                  <hr class="my-4">
+
+                                  <div class="d-flex justify-content-between mb-4">
+                                    <h5 class="text-uppercase">items {{ cart.count }}</h5>
+                                    <h5>₱ {{ total|floatformat:2 }}</h5>
+                                  </div>
+
+                                  <hr class="my-4">
+
+                                  <div class="d-flex justify-content-between mb-5">
+                                    <h5 class="text-uppercase">Total price</h5>
+                                    <h5>₱ {{ total|floatformat:2 }}</h5>
+                                  </div>
+
+                                  {% if cart.count == 0 %}
+                                    <button type="button" class="btn btn-dark btn-block btn-lg"
+                                      data-mdb-ripple-color="dark" disabled>Que Order</button>
+                                  {% else %}
+                                    <a href="{% url 'make_order' %}" class="btn btn-dark btn-block btn-lg"
+                                      data-mdb-ripple-color="dark" >Que Order</a>
+                                  {% endif %}
+
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+          </div>
+      </div>
+  </div>
+{% endblock %}
+
+{% block custom_js %}
+
+{% endblock custom_js %}

@@ -1,0 +1,97 @@
+{% extends 'costumer/base.html' %}
+{% load static %}
+{% block content %}
+<div class="profile-card">
+      <div class="profile-back" style="background: rgb(254,0,2);"></div><img class="rounded-circle profile-pic" src="{% static 'costumer_templates/assets/img/150607784_1734378716914298_4521171664303503947_n.jpg' %}">
+      <h3 class="profile-name" style="background: rgb(254,0,2);">BICOL SPEEDTECH MOTOR CORP.&nbsp;</h3>
+      <p class="profile-bio">We sell motorcycle parts!</p>
+      <ul class="social-list">
+          <li> <i class="fa fa-facebook-official" style="background: rgb(254,0,2);"></i></li>
+          <li> <i class="fa fa-envelope" style="background: rgb(254,0,2);"></i></li>
+          <li> <i class="fa fa-phone-square" style="background: rgb(254,0,2);"></i></li>
+      </ul>
+  </div>
+  <div class="container">
+    <div class="row">
+        <div class="col">
+          <a class="btn-circle" href="{% url 'costumer_home' %}" style="margin-right: 0px;margin-left: 6px;"><i class="fa fa-home" style="color: #fe0002;font-size: 30px;"></i></a>
+          <a class="btn-circle" href="{% url 'cart' %}" style="margin-right: 0px;margin-left: 6px;" type="button"><i class="fa fa-shopping-cart" style="color: #fe0002;font-size: 30px;"></i><span class="badge bg-primary text-start float-end" style="background: var(--bs-pink);border-color: var(--bs-purple);">{{ cart.count }}</span></a>
+          <a class="btn-circle" href="{% url 'order' %}" style="margin-right: 0px;margin-left: 6px;" type="button"><i class="fa fa-inbox" style="color: #fe0002;font-size: 30px;"></i><span class="badge bg-primary text-start float-end" style="background: var(--bs-pink);border-color: var(--bs-purple);">{{ order_count }}</span></a>
+          <a class="btn-circle dropdown-toggle" type="button"id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 0px;background: #ffffff;border: 1px none;margin-right: 0px;margin-left: 6px;" type="button"><i class="fa fa-user" style="color: #fe0002;font-size: 30px;"></i></a>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li><a class="dropdown-item" href="#">Logout</a></li>
+          </ul>
+        </div>
+        </div>
+          <div class="col-md-12">
+              <div class="row padMar">
+                  <div class="col padMar">
+                      <div class="input-group"><input class="form-control autocomplete" type="text" placeholder="Search"><button class="btn btn-warning" type="button" style="background: rgb(254,0,2);"><i class="fa fa-search"></i></button></div>
+                  </div>
+              </div>
+          </div>
+      <div class="row">
+          <div class="col-md-12" style="margin-top: 10px;">
+              <div>
+                  <ul class="nav nav-pills nav-fill" role="tablist">
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link border rounded-pill active" role="tab" data-bs-toggle="pill" href="#tab-1">All</a>
+                      </li>
+                      {% for company in company %}
+                        <li class="nav-item" role="presentation">
+                          <a class="nav-link border rounded-pill" role="tab" data-bs-toggle="pill" href="#tab-{{ company.name }}">{{ company.name }}</a>
+                        </li>
+                      {% endfor %}
+                  </ul>
+                  <div class="tab-content">
+                      <div class="tab-pane active" role="tabpanel" id="tab-1">
+                          <div class="row product-list">
+                              {% for motorcycle in all_motorcycle %}
+                              <div class="col-sm-6 col-md-4 product-item">
+                                  <div class="product-container">
+                                      <div class="row">
+                                          <div class="col-md-12"><a class="product-image" href="{% url 'motorcycle' motorcycle.name %}"><img class="img-fluid" src="{{ motorcycle.image.url }}"></a></div>
+                                      </div>
+                                      <div class="row">
+                                          <div class="col-8">
+                                              <h2><a href="#">{{ motorcycle.name }}</a></h2>
+                                          </div>
+                                          <div class="col-4"><a class="small-text" href="#">{{ motorcycle.company.name }}</a></div>
+                                      </div>
+                                  </div>
+                              </div>
+                              {% endfor %}
+                          </div>
+                      </div>
+                      {% for company in company %}
+                        <div class="tab-pane " role="tabpanel" id="tab-{{ company.name }}">
+                          <div class="row product-list">
+                            {% for motorcycle in company.motorcycle.all %}
+                              <div class="col-sm-6 col-md-4 product-item">
+                                  <div class="product-container">
+                                      <div class="row">
+                                          <div class="col-md-12"><a class="product-image" href="{% url 'motorcycle' motorcycle.name %}"><img class="img-fluid" src="{{ motorcycle.image.url }}"></a></div>
+                                      </div>
+                                      <div class="row">
+                                          <div class="col-8">
+                                              <h2><a href="#">{{ motorcycle.name }}</a></h2>
+                                          </div>
+                                          <div class="col-4"><a class="small-text" href="#">{{ company.name }}</a></div>
+                                      </div>
+                                  </div>
+                              </div>
+                            {% endfor %}
+                          </div>
+                        </div>
+                      {% endfor %}
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+{% endblock %}
+
+{% block custom_js %}
+
+{% endblock custom_js %}

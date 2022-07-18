@@ -12,9 +12,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure--=@zy^t4n)=t4_owsz$^l_75zt@90yr2^o1z5u57bg1sl_tvt^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['speedtechmotor.herokuapp.com']
+ALLOWED_HOSTS = ['speedtechmotor.herokuapp.com', '127.0.0.1']
 
 
 # Application definition
@@ -38,6 +38,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'ecomm.LoginCheckMiddleWare.LoginCheckMiddleWare',
 ]
 
 ROOT_URLCONF = 'speedtech.urls'

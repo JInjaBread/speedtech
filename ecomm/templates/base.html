@@ -1,44 +1,37 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
     <meta charset="utf-8">
-    <title>EShopper - Bootstrap Shop Template</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="Free HTML Templates" name="keywords">
-    <meta content="Free HTML Templates" name="description">
-
-    <!-- Favicon -->
-    <link href="img/favicon.ico" rel="icon">
-
-    <!-- Google Web Fonts -->
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-
-    <!-- Libraries Stylesheet -->
-    <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
-
-    <!-- Customized Bootstrap Stylesheet -->
-    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Bicol Speedtech Motor Corp.</title>
+    <link rel="stylesheet" href="{% static 'landingpage_theme/assets/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700&amp;display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Kaushan+Script&amp;display=swap">
+    <link rel="stylesheet" href="{% static 'landingpage_theme/assets/fonts/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'landingpage_theme/assets/css/Modal-Login-form.css' %}">
 </head>
-<body>
-  {% block content %}
-  {% endblock %}
-  <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
 
-
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
-    <script src="{% static 'lib/easing/easing.min.js' %}"></script>
-    <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
-
-    <!-- Template Javascript -->
-    <script src="{% static 'js/main.js' %}"></script>
-    <script src="{% static 'js/custom.js' %}"></script>
+<body id="page-top" data-bs-spy="scroll" data-bs-target="#mainNav" data-bs-offset="54">
+  <nav class="navbar navbar-dark navbar-expand-lg fixed-top bg-dark" id="mainNav">
+      <div class="container"><a class="navbar-brand" href="#page-top" style="color: rgb(253,0,2);"><img src="{% static 'landingpage_theme/assets/img/dsBuffer.jpg' %}" style="width: 47px;">Bicol Speedtech Motor Corp.</a><button data-bs-toggle="collapse" data-bs-target="#navbarResponsive" class="navbar-toggler navbar-toggler-right" type="button" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><i class="fa fa-bars"></i></button>
+          <div class="collapse navbar-collapse" id="navbarResponsive">
+              <ul class="navbar-nav ms-auto text-uppercase">
+                  <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+                  <li class="nav-item"></li>
+                  <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#team">Store</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#">SIGN UP</a></li>
+              </ul>
+          </div>
+      </div>
+  </nav>
+    {% block content %}
+    {% endblock %}
+    <script src="{% static 'landingpage_theme/assets/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'landingpage_theme/assets/js/agency.js' %}"></script>
 </body>
-<html>
+
+</html>

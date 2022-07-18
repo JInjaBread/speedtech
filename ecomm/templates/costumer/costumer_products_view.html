@@ -1,0 +1,164 @@
+{% extends 'costumer/base.html' %}
+{% load static %}
+{% block content %}
+{% if messages %}
+  {% for message in messages %}
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="liveToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <strong class="me-auto">Speedtech</strong>
+        <small>Just Now</small>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        {{ message }}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+{% endif %}
+<div class="profile-card">
+      <div class="profile-back" style="background: rgb(254,0,2);"></div><img class="rounded-circle profile-pic" src="{% static 'costumer_templates/assets/img/150607784_1734378716914298_4521171664303503947_n.jpg' %}">
+      <h3 class="profile-name" style="background: rgb(254,0,2);">BICOL SPEEDTECH MOTOR CORP.&nbsp;</h3>
+      <p class="profile-bio">We sell motorcycle parts!</p>
+      <ul class="social-list">
+          <li> <i class="fa fa-facebook-official" style="background: rgb(254,0,2);"></i></li>
+          <li> <i class="fa fa-envelope" style="background: rgb(254,0,2);"></i></li>
+          <li> <i class="fa fa-phone-square" style="background: rgb(254,0,2);"></i></li>
+      </ul>
+  </div>
+  <div class="container">
+    <div class="row">
+        <div class="col">
+          <a class="btn-circle" href="{% url 'costumer_home' %}" style="margin-right: 0px;margin-left: 6px;"><i class="fa fa-home" style="color: #fe0002;font-size: 30px;"></i></a>
+          <a class="btn-circle" href="{% url 'cart' %}" style="margin-right: 0px;margin-left: 6px;" type="button"><i class="fa fa-shopping-cart" style="color: #fe0002;font-size: 30px;"></i><span class="badge bg-primary text-start float-end" style="background: var(--bs-pink);border-color: var(--bs-purple);">{{ cart.count }}</span></a>
+          <a class="btn-circle" href="{% url 'order' %}" style="margin-right: 0px;margin-left: 6px;" type="button"><i class="fa fa-inbox" style="color: #fe0002;font-size: 30px;"></i><span class="badge bg-primary text-start float-end" style="background: var(--bs-pink);border-color: var(--bs-purple);">{{ order_count }}</span></a>
+          <a class="btn-circle dropdown-toggle" type="button"id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 0px;background: #ffffff;border: 1px none;margin-right: 0px;margin-left: 6px;" type="button"><i class="fa fa-user" style="color: #fe0002;font-size: 30px;"></i></a>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li><a class="dropdown-item" href="#">Logout</a></li>
+          </ul>
+        </div>
+        </div>
+          <div class="col-md-12">
+              <div class="row padMar">
+                  <div class="col padMar">
+                      <div class="input-group"><input class="form-control autocomplete" type="text" placeholder="Search"><button class="btn btn-warning" type="button" style="background: rgb(254,0,2);"><i class="fa fa-search"></i></button></div>
+                  </div>
+              </div>
+          </div>
+      <div class="row">
+        <img src="{{ motorcycle.image.url }}" class="img-fluid" alt="...">
+      </div>
+      <div class="row">
+          <div class="col-md-12" style="margin-top: 10px;">
+              <div>
+                  <ul class="nav nav-pills nav-fill" role="tablist">
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link border rounded-pill active" role="tab" data-bs-toggle="pill" href="#tab-0">All</a>
+                      </li>
+                      {% for category in category %}
+                        <li class="nav-item" role="presentation">
+                          <a class="nav-link border rounded-pill" role="tab" data-bs-toggle="pill" href="#tab-{{ category.id }}">{{ forloop.counter }}. {{ category.name }}</a>
+                        </li>
+                      {% endfor %}
+                  </ul>
+                  <div class="tab-content">
+                      <div class="tab-pane active" role="tabpanel" id="tab-0">
+                        <section>
+                          <div class="container py-5">
+                            <div class="row">
+                              {% for product in products %}
+                              <div class="col-md-12 col-lg-4 mb-4 mb-lg-0">
+                                <div class="card">
+                                  <div class="d-flex justify-content-between p-3">
+                                    <p class="lead mb-0">{{ product.motorcycle.name }}</p>
+                                    <div
+                                      class="bg-info rounded-circle d-flex align-items-center justify-content-center shadow-1-strong"
+                                      style="width: 35px; height: 35px;">
+                                      <p class="text-white mb-0 small">x4</p>
+                                    </div>
+                                  </div>
+                                  <img src="{{ product.image.url }}"
+                                    class="card-img-top" alt="Laptop" />
+                                  <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                      <p class="small">{{ product.category }}</p>
+                                      <p class="small text-danger"><s>₱{{ product.old_price }}</s></p>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between mb-3">
+                                      <h5 class="mb-0">{{ product.name }}</h5>
+                                      <h5 class="text-dark mb-0">₱{{ product.price }}</h5>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between mb-2">
+                                      <p class="text-muted mb-0">Available: <span class="fw-bold">{{ product.stock }}</span></p>
+                                      <div class="ms-auto text-warning">
+                                          <a href="{% url 'add_to_cart' product.id %}" class="btn btn-sm text-dark p-0"> <i class="fa fa-shopping-cart mr-1"></i> Add To Cart</a>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              {% endfor %}
+                            </div>
+                          </div>
+                        </section>
+                      </div>
+                      {% for category in category %}
+                        <div class="tab-pane " role="tabpanel" id="tab-{{ category.id }}">
+                          <section>
+                            <div class="container py-5">
+                              <div class="row">
+                                {% for product in products %}
+                                  {% if product.category == category %}
+                                    <div class="col-md-12 col-lg-4 mb-4 mb-lg-0">
+                                      <div class="card">
+                                        <div class="d-flex justify-content-between p-3">
+                                          <p class="lead mb-0">{{ product.motorcycle.name }}</p>
+                                          <div
+                                            class="bg-info rounded-circle d-flex align-items-center justify-content-center shadow-1-strong"
+                                            style="width: 35px; height: 35px;">
+                                            <p class="text-white mb-0 small">x4</p>
+                                          </div>
+                                        </div>
+                                        <img src="{{ product.image.url }}"
+                                          class="card-img-top" alt="Laptop" />
+                                        <div class="card-body">
+                                          <div class="d-flex justify-content-between">
+                                            <p class="small">{{ product.category }}</p>
+                                            <p class="small text-danger"><s>₱{{ product.old_price }}</s></p>
+                                          </div>
+
+                                          <div class="d-flex justify-content-between mb-3">
+                                            <h5 class="mb-0">{{ product.name }}</h5>
+                                            <h5 class="text-dark mb-0">₱{{ product.price }}</h5>
+                                          </div>
+
+                                          <div class="d-flex justify-content-between mb-2">
+                                            <p class="text-muted mb-0">Available: <span class="fw-bold">{{ product.stock }}</span></p>
+                                            <div class="ms-auto text-warning">
+                                                <a href="{% url 'add_to_cart' product.id %}" class="btn btn-sm text-dark p-0"> <i class="fa fa-shopping-cart mr-1"></i> Add To Cart</a>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  {% endif %}
+                                {% endfor %}
+                              </div>
+                            </div>
+                          </section>
+                        </div>
+                      {% endfor %}
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+{% endblock %}
+
+{% block custom_js %}
+
+{% endblock custom_js %}

@@ -1,0 +1,89 @@
+{% extends "staff/base.html" %}
+{% load static %}
+{% block content %}
+{% include "staff/sidebar.html" %}
+{% if messages %}
+  {% for message in messages %}
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="liveToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <strong class="me-auto">Speedtech</strong>
+        <small>Just Now</small>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        {{ message }}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+{% endif %}
+<div class="d-flex flex-column" id="content-wrapper">
+        <div id="content">
+            <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top">
+              <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle me-3" id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
+                  <form class="d-none d-sm-inline-block me-auto ms-md-3 my-2 my-md-0 mw-100 navbar-search">
+                      <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Search for ..."><button class="btn btn-primary py-0" type="button" style="background: rgb(254,0,2);border-color: var(--bs-red);"><i class="fas fa-search"></i></button></div>
+                  </form>
+                  <ul class="navbar-nav flex-nowrap ms-auto">
+                      <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#"><i class="fas fa-search"></i></a>
+                          <div class="dropdown-menu dropdown-menu-end p-3 animated--grow-in" aria-labelledby="searchDropdown">
+                              <form class="me-auto navbar-search w-100">
+                                  <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Search for ...">
+                                      <div class="input-group-append"><button class="btn btn-primary py-0" type="button"><i class="fas fa-search"></i></button></div>
+                                  </div>
+                              </form>
+                          </div>
+                      </li>
+                      <li class="nav-item dropdown no-arrow mx-1"></li>
+                      <li class="nav-item dropdown no-arrow mx-1">
+                          <div class="shadow dropdown-list dropdown-menu dropdown-menu-end" aria-labelledby="alertsDropdown"></div>
+                      </li>
+                      <div class="d-none d-sm-block topbar-divider"></div>
+                      <li class="nav-item dropdown no-arrow">
+                          <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#"><span class="d-none d-lg-inline me-2 text-gray-600 small">{{ request.user.first_name }} {{ request.user.last_name }}</span><img class="border rounded-circle img-profile" src="https://cdn-icons-png.flaticon.com/512/149/149071.png"></a>
+                              <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in"><a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile</a><a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Settings</a><a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Activity log</a>
+                                  <div class="dropdown-divider"></div><a class="dropdown-item" href="{% url 'logout_user' %}"><i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Logout</a>
+                              </div>
+                          </div>
+                      </li>
+                  </ul>
+              </div>
+            </nav>
+            <div class="container-fluid">
+              <div class="d-sm-flex justify-content-between align-items-center mb-4">
+                  <h3 class="text-dark mb-0">Order</h3>
+              </div>
+              <div class="row space-rows">
+                  {% for order in order %}
+                    <div class="col">
+                        <div class="card cards-shadown cards-hover" data-aos="flip-left" data-aos-duration="950">
+                            <div class="card-header"><button class="btn btn-primary" type="button" style="background: rgb(254,0,2);border-color: rgb(254,0,2);"><i class="fa fa-trash" id="download-icon-1"></i></button><span class="space"><a href="#"></a></span>
+                                <div class="cardheader-text">
+                                    <h4 id="heading-card-1">{{ order.user.admin.first_name }} {{ order.user.admin.last_name }}</h4>
+                                    <p id="cardheader-subtext-1">Ref Code: {{ order.ref_code }}</p>
+                                    <p class="text-truncate" id="cardheader-subtext-4">Items :{{ order.items }}</p>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text sub-text-color">{{ order.date }}</p>
+                                <p class="card-text cardbody-sub-text">₱ {{ order.total|floatformat:2 }}</p>
+                                {% if order.status == "Packaging" %}
+                                  <a class="btn btn-primary text-nowrap" href="{% url 'cancel_order' order.id %}" style="background: rgb(254,0,2);border-color: rgb(254,0,2);">Ready For Pick Up</a>
+                                {% else %}
+                                  <a class="btn btn-primary text-nowrap" href="{% url 'set_complete' order.id %}" style="background: rgb(254,0,2);border-color: rgb(254,0,2);">Mark as Complete</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                  {% endfor %}
+            </div>
+        </div>
+        <footer class="bg-white sticky-footer">
+            <div class="container my-auto">
+                <div class="text-center my-auto copyright"><span>Copyright © Brand 2022</span></div>
+            </div>
+        </footer>
+    </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+    <! -- Modal -->
+{% endblock %}
