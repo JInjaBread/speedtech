@@ -9,7 +9,6 @@ class LoginCheckMiddleWare(MiddlewareMixin):
         modulename = view_func.__module__
         print(modulename)
         user = request.user
-        print(user.is_authenticated)
         #Check whether the user is logged in or not
         if user.is_authenticated:
             if user.user_type == "1":
@@ -44,8 +43,8 @@ class LoginCheckMiddleWare(MiddlewareMixin):
             else:
                 return redirect("home")
 
-        else:
-            if request.path == reverse("home") or request.path == reverse("doLogin"):
-                pass
-            else:
-                return redirect("home")
+        #else:
+            #if request.path == reverse("home") or request.path == reverse("doLogin"):
+                #pass
+            #else:
+                #return redirect("home")

@@ -87,7 +87,7 @@
                                         <div class="col-12">
                                             <p class="product-description"> Available: {{ product.stock }}</p>
                                             <div class="row">
-                                                <div class="col-6"><button class="btn btn-light" type="button"><i class="icon-pencil"></i>&nbsp;Edit</button></div>
+                                                <div class="col-6"><button class="btn btn-light" type="button" data-bs-toggle="modal" data-bs-target="#{{product.name}}Products"><i class="icon-pencil"></i>&nbsp;Edit</button></div>
                                                 <div class="col-6">
                                                     <p class="product-price">₱ {{ product.price }}</p>
                                                 </div>
@@ -124,7 +124,7 @@
                                               <div class="col-12">
                                                   <p class="product-description"> Available: {{ product.stock }}</p>
                                                   <div class="row">
-                                                      <div class="col-6"><button class="btn btn-light" type="button"><i class="icon-pencil"></i>&nbsp;Edit</button></button></div>
+                                                      <div class="col-6"><button class="btn btn-light" type="button" data-bs-toggle="modal" data-bs-target="#{{product.name}}Products"><i class="icon-pencil"></i>&nbsp;Edit</button></div>
                                                       <div class="col-6">
                                                           <p class="product-price">₱ {{ product.price }}</p>
                                                       </div>
@@ -168,7 +168,7 @@
              </div>
              <div class="mb-3">
                <label for="exampleInputEmail1" class="form-label">Price</label>
-               <input type="number" step="any" class="form-control" aria-describedby="price" name="price">
+               <input type="text" step="any" class="form-control" aria-describedby="price" name="price">
                <div id="emailHelp" class="form-text"></div>
              </div>
              <div class="mb-3">
@@ -205,20 +205,52 @@
      </div>
    </div>
    {% for product in products %}
-   <div class="modal fade" id="{{ company.name }}Company" tabindex="-1" aria-labelledby="{{ company.name }}Company" aria-hidden="true">
+   <div class="modal fade" id="{{ product.name }}Products" tabindex="-1" aria-labelledby="{{ product.name }}Products" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalLabel">Edit Product</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <form action="" method="POST" enctype="multipart/form-data">
+        <form action="{% url 'edit_product' product.id %}" method="POST" enctype="multipart/form-data">
           {% csrf_token %}
         <div class="modal-body">
             <div class="mb-3">
               <label for="exampleInputEmail1" class="form-label">Product</label>
-              <input type="text" class="form-control" aria-describedby="name" name="name" value="{{ company.name }}">
+              <input type="text" class="form-control" aria-describedby="name" name="name" value="{{ product.name }}">
               <div id="emailHelp" class="form-text"></div>
+            </div>
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Price</label>
+              <input type="text" class="form-control" aria-describedby="price" name="price" value="{{ product.price }}">
+            </div>
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Stock</label>
+              <input type="number" class="form-control" aria-describedby="stock" name="stock" value="{{ product.stock }}">
+            </div>
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Motorcycle</label>
+              <select name="motorcycle" class="form-select">
+                {% for motorcycle in motorcycle %}
+                  {% if motorcycle.name == product.motorcycle.name %}
+                    <option selected value="{{ motorcycle.id }}">{{ motorcycle.name }}</option>
+                  {% else %}
+                    <option value="{{ motorcycle.id }}">{{ motorcycle.name }}</option>
+                  {% endif %}
+                {% endfor %}
+             </select>
+            </div>
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Category</label>
+              <select name="category" class="form-select">
+                {% for category in categories %}
+                  {% if category.name == product.category.name %}
+                    <option selected value="{{ category.id }}">{{ category.name }}</option>
+                  {% else %}
+                    <option value="{{ category.id }}">{{ category.name }}</option>
+                  {% endif %}
+                {% endfor %}
+             </select>
             </div>
             <div class="mb-3">
               <label for="exampleInputPassword1" class="form-label">Image</label>

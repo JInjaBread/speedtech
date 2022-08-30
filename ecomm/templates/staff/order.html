@@ -54,30 +54,20 @@
               <div class="d-sm-flex justify-content-between align-items-center mb-4">
                   <h3 class="text-dark mb-0">Order</h3>
               </div>
-              <div class="row space-rows">
-                  {% for order in order %}
-                    <div class="col">
-                        <div class="card cards-shadown cards-hover" data-aos="flip-left" data-aos-duration="950">
-                            <div class="card-header"><a class="btn btn-primary" href="{% url 'cancel_order' order.id %}" type="button" ><i class="fa fa-trash" id="download-icon-1"></i></a><span class="space"><a href="#"></a></span>
-                                <div class="cardheader-text">
-                                    <h4 id="heading-card-1">{{ order.user.admin.first_name }} {{ order.user.admin.last_name }}</h4>
-                                    <p id="cardheader-subtext-1">Ref Code: {{ order.ref_code }}</p>
-                                    <p class="text-truncate" id="cardheader-subtext-4">Items :{{ order.items }}</p>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <p class="card-text sub-text-color">{{ order.date }}</p>
-                                <p class="card-text cardbody-sub-text">₱ {{ order.total|floatformat:2 }}</p>
-                                {% if order.status == "Packaging" %}
-                                  <a class="btn btn-primary text-nowrap" href="{% url 'set_ready' order.id %}" style="background: rgb(254,0,2);border-color: rgb(254,0,2);">Ready For Pick Up</a>
-                                {% else %}
-                                  <a class="btn btn-primary text-nowrap" href="{% url 'set_complete' order.id %}" style="background: rgb(254,0,2);border-color: rgb(254,0,2);">Mark as Complete</a>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                  {% endfor %}
-            </div>
+                <table class="table" id="tbl_order">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Reference Code</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Total</th>
+                      <th scope="col">Items</th>
+                      <th scope="col">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                  </table>
         </div>
         <footer class="bg-white sticky-footer">
             <div class="container my-auto">
@@ -85,5 +75,135 @@
             </div>
         </footer>
     </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
-    <! -- Modal -->
+    <div class="modal fade" id="view_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">Order Info</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            ...
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Understood</button>
+          </div>
+        </div>
+      </div>
+    </div>
 {% endblock %}
+{% block custom_js %}
+<script>
+  $(document).ready(function () {
+     load_order();
+  });
+function load_order(){
+  $.ajax({
+    type:"GET",
+    url: "{% url 'get_orders' %}",
+    dataType: "json",
+    success: function(data){
+      var n = JSON.parse(data);
+      console.log(n);
+      $('#tbl_order').DataTable({
+        "data": n,
+        "columns": [
+          { data: "id"},
+          { data: "ref_code" },
+          { data: "status" },
+          { data: "total" },
+          { data: "items" },
+          {data: "",
+          mRender:function(data, type, row){
+              return '<button type="button"onclick="view_modal('+row.id+')" class="btn btn-light"><i class="fa fa-eye" aria-hidden="true"></i></button> <button type="button" onclick="cancel_order('+row.id+')" class="btn btn-light"><i class="fa  fa-times" aria-hidden="true"></i></button>'
+          }}
+        ]
+    });
+    },
+    error: function(error){
+      console.log(error.responseText);
+    }
+  });
+}
+function view_modal(id){
+  $('#view_modal').modal('show');
+  var id = id;
+  console.log(id);
+  $.ajax({
+    type: "POST",
+    url: "{% url 'get_orders_data' %}",
+    data:{
+      id:id
+    },
+    dataType: "json",
+    success: function(data){
+      var n = JSON.parse(data);
+      console.log(n);
+      var apnd = "";
+      apnd += '<p> Receiver: '+ n.first_name +' '+ n.last_name +'</p>';
+      apnd += '<p>Reference Code: '+ n.ref_code +'</p>';
+      apnd += '<p>Status: '+ n.status +'</p>';
+      apnd += '<p>Items: '+ n.items +'</p>';
+      if (n.status == "Packaging") {
+        apnd += '<button type="button" onclick="set_ready('+ n.id +')" class="btn btn-primary">Mark as Ready for Pickup</button>';
+      } else {
+        apnd += '<button type="button" onclick="set_complete('+ n.id +')" class="btn btn-primary">Mark as Complete</button>';
+      }
+      $('.modal-body').html(apnd);
+    },
+
+  });
+}
+function set_ready(id){
+  var id = id;
+  $.ajax({
+    type: "POST",
+    url: "{% url 'set_ready'%}",
+    data:{
+      id:id
+    },
+    dataType: "json",
+    success: function(data){
+      $('#tbl_order').DataTable().destroy();
+      load_order();
+      $('#view_modal').modal('hide');
+      toastr.success(data.message);
+    }
+  });
+}
+function set_complete(id){
+  var id = id;
+  $.ajax({
+    type: "POST",
+    url: "{% url 'set_complete' %}",
+    data:{
+      id:id
+    },
+    dataType:"json",
+    success: function(data){
+      $('#view_modal').modal('hide');
+      $('#tbl_order').DataTable().destroy();
+      load_order();
+      toastr.success(data.message);
+    }
+  });
+}
+function cancel_order(id){
+  var id = id;
+  $.ajax({
+    type:"POST",
+    url:"{% url 'cancel_order' %}",
+    data: {
+      id:id
+    },
+    dataType:"json",
+    success: function(data){
+      $('#tbl_order').DataTable().destroy();
+      load_order();
+      toastr.success(data.message);
+    }
+  });
+}
+</script>
+{% endblock custom_js %}

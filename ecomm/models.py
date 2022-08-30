@@ -48,6 +48,7 @@ class Company(models.Model):
 class Motorcycle(models.Model):
     name = models.CharField(max_length=255)
     image = models.ImageField(upload_to='motorcycle')
+    anatomy_image = models.ImageField(upload_to='motorcycle_anatomy')
     company = models.ForeignKey(Company, on_delete=models.DO_NOTHING, related_name='motorcycle')
     objects = models.Manager()
 
@@ -56,7 +57,6 @@ class Motorcycle(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=255)
-    image = models.ImageField(upload_to='category')
     objects = models.Manager()
 
     def __str__(self):

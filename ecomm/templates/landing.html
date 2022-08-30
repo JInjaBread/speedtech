@@ -8,6 +8,7 @@
               <div class="intro-lead-in"><span>Welcome to</span></div>
               <div class="intro-heading text-uppercase"><span style="color: rgb(253,0,2);font-size: 52px;">Bicol Speedtech motor corp.</span></div>
               <div><button class="btn btn-primary btn-lg" type="button" data-bs-toggle="modal" data-bs-target="#modalLogin" style="height: 66px;width: 127.525px;">LOG IN</button>
+                <button class="btn btn-primary btn-lg" type="button" data-bs-toggle="modal" data-bs-target="#modalSignup" style="height: 66px;width: 127.525px;">SIGN UP</button>
                   <div class="modal fade" role="dialog" tabindex="-1" id="modalLogin">
                       <div class="modal-dialog" role="document">
                           <div class="modal-content">
@@ -25,6 +26,34 @@
                                       <div class="form-group mb-4"><input class="form-control" type="text" name="username" placeholder="Phone"></div>
                                       <div class="form-group mb-4"><input class="form-control" type="password" name="password" placeholder="Password"></div>
                                       <div class="form-group mb-4"><button class="btn btn-primary d-block w-100" type="submit">LOGIN</button></div><a class="forgot" href="#">FORGOT PASSWORD?</a>
+                                  </form>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="modal fade" role="dialog" tabindex="-1" id="modalSignup">
+                      <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                              <div class="modal-header">
+                                  <h3 class="text-primary" style="color: rgb(253,0,2);"></h3><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body">
+                                  <div class="row">
+                                      <div class="col padMar margenesCajas">
+                                          <p class="text-secondary p-0 m-0 p-2">BICOL SPEEDTECH MOTOR CORP.</p>
+                                      </div>
+                                  </div>
+                                  <form class="p-4" action="{% url 'signup' %}"  method="POST">
+                                    {% csrf_token %}
+                                      <div class="form-group mb-4">
+                                        <input class="form-control" type="text" id="username" name="username" placeholder="Phone">
+                                        <div id="phone_exist" class="form-text text-danger"></div>
+                                      </div>
+                                      <div class="form-group mb-4"><input class="form-control" type="text" name="first_name" placeholder="First Name"></div>
+                                      <div class="form-group mb-4"><input class="form-control" type="text" name="last_name" placeholder="Last Name"></div>
+                                      <div class="form-group mb-4"><input class="form-control" type="text" name="address" placeholder="Address"></div>
+                                      <div class="form-group mb-4"><input class="form-control" type="password" name="password" placeholder="Password"></div>
+                                      <div class="form-group mb-4"><button class="btn btn-primary d-block w-100" type="submit">Sign UP</button></div>
                                   </form>
                               </div>
                           </div>
@@ -434,3 +463,32 @@
       </div>
   </div>
 {% endblock %}
+{% block custom_js %}
+
+<script>
+  $(document).ready(function(){
+    $("#username").keyup(function(){
+      var username = $(this).val();
+      if(username != ""){
+        $.ajax({
+          url : '{% url 'check_phone_exist' %}',
+          type : 'POST',
+          data : {username:username},
+          success: function(data){
+            if(data.message == "True"){
+              phone_error = "This number is in use!";
+              $("#phone_exist").text(phone_error);
+            }else{
+              phone_error = "";
+              $("#phone_exist").text(phone_error);
+            }
+          }
+        });
+      }else{
+        $(".phone_exist").remove();
+      }
+    })
+  });
+</script>
+
+{% endblock custom_js %}

@@ -90,30 +90,29 @@ def motorcycle(request, motorcycle_name):
     }
 
     return render(request, 'costumer/costumer_products_view.html', context)
-def update_cart(request, item_id):
-    if request.method == 'POST':
-        user = Costumer.objects.get(admin=request.user)
-        cart = OrderItem.objects.filter(user_id=user.id)
-        cart_to_update = cart.get(id=item_id)
-        quantity = request.POST.get('quantity')
-        if quantity != '0':
+
+@csrf_exempt
+def update_cart(request):
+    item_id = request.POST.get('id')
+    quantity = request.POST.get('quantity')
+    user = Costumer.objects.get(admin=request.user)
+    cart = OrderItem.objects.filter(user_id=user.id)
+    cart_to_update = cart.get(id=item_id)
+    product = Product.objects.get(id=cart_to_update.item.id)
+    if quantity != '0':
+        if int(quantity) > product.stock:
+            return JsonResponse({'response':'error', 'message':'Quantity must not be over valued to the stock!'})
+        else:
             try:
                 cart_to_update.quantity = quantity
                 cart_to_update.save()
-                return redirect(request.META['HTTP_REFERER'])
+                return JsonResponse({'response':'success', 'message':'Update Cart Success!'})
             except:
-                print('error')
-                return redirect(request.META['HTTP_REFERER'])
-        else:
-            try:
-                cart_to_update.quantity = 1
-                cart_to_update.save()
-                return redirect(request.META['HTTP_REFERER'])
-            except:
-                print('error')
-                return redirect(request.META['HTTP_REFERER'])
+                return JsonResponse({'response':'error', 'message':'Please Try Again!!'})
 
-def add_to_cart(request, product_id):
+@csrf_exempt
+def add_to_cart(request):
+    product_id = request.POST.get('id')
     product = get_object_or_404(Product, id=product_id)
     user = Costumer.objects.get(admin=request.user)
 
@@ -121,16 +120,14 @@ def add_to_cart(request, product_id):
     if order_qs.exists():
         order = order_qs.filter(item = product)
         if order.exists():
-            messages.info(request, "Item is allready in the cart!.")
-            return redirect(request.META['HTTP_REFERER'])
+            return JsonResponse({'response':'info', 'message':'Item is allready in the cart'})
         else:
             order_item, created = OrderItem.objects.get_or_create(
                 item=product,
                 user=user,
                 ordered=False
             )
-            messages.info(request, "Item added to cart!!")
-            return redirect(request.META['HTTP_REFERER'])
+            return JsonResponse({'response':'info', 'message':'Item is allready in the cart'})
     else:
         cart = OrderItem(
             item=product,
@@ -138,8 +135,7 @@ def add_to_cart(request, product_id):
             ordered=False
         )
         cart.save()
-        messages.info(request, "Item added to cart!.")
-        return redirect(request.META['HTTP_REFERER'])
+        return JsonResponse({'response':'success', 'message':'Item added to cart!'})
 
 def remove_from_cart(request, item_id):
     user = Costumer.objects.get(admin=request.user)
@@ -178,6 +174,7 @@ def order(request):
 def create_ref_code():
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=6))
 
+@csrf_exempt
 def make_order(request):
     user = Costumer.objects.get(admin=request.user)
     cart = OrderItem.objects.filter(user_id=user.id)
@@ -196,12 +193,11 @@ def make_order(request):
             product = Product.objects.get(id=item.item.id)
             product.stock = product.stock - item.quantity
             product.save()
+            item.delete()
         list = list[1:]
         order.items = list
         order.save()
-        messages.info(request, "ORDER IS SET!!.")
-        return redirect(request.META['HTTP_REFERER'])
+        return JsonResponse({'response':'success', 'message':'Order Success!'})
     except Exception as e:
         print(e)
-        messages.info(request, "Error!!.")
-        return redirect(request.META['HTTP_REFERER'])
+        return JsonResponse({'response':'error', 'message':'Order Success!'})
