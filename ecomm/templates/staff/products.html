@@ -4,18 +4,9 @@
 {% include "staff/sidebar.html" %}
 {% if messages %}
   {% for message in messages %}
-  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-    <div id="liveToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="toast-header">
-        <strong class="me-auto">Speedtech</strong>
-        <small>Just Now</small>
-        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-      </div>
-      <div class="toast-body">
-        {{ message }}
-      </div>
-    </div>
-  </div>
+   <script>
+     alert("{{ message }}")
+   </script>
   {% endfor %}
 {% endif %}
 <div class="d-flex flex-column" id="content-wrapper">
@@ -87,7 +78,7 @@
                                         <div class="col-12">
                                             <p class="product-description"> Available: {{ product.stock }}</p>
                                             <div class="row">
-                                                <div class="col-6"><button class="btn btn-light" type="button" data-bs-toggle="modal" data-bs-target="#{{product.name}}Products"><i class="icon-pencil"></i>&nbsp;Edit</button></div>
+                                                <div class="col-6"><button class="btn btn-light" type="button" data-bs-toggle="modal" data-bs-target="#Products{{product.id}}"><i class="icon-pencil"></i>&nbsp;Edit</button></div>
                                                 <div class="col-6">
                                                     <p class="product-price">₱ {{ product.price }}</p>
                                                 </div>
@@ -124,7 +115,7 @@
                                               <div class="col-12">
                                                   <p class="product-description"> Available: {{ product.stock }}</p>
                                                   <div class="row">
-                                                      <div class="col-6"><button class="btn btn-light" type="button" data-bs-toggle="modal" data-bs-target="#{{product.name}}Products"><i class="icon-pencil"></i>&nbsp;Edit</button></div>
+                                                      <div class="col-6"><button class="btn btn-light" type="button" data-bs-toggle="modal" data-bs-target="#Products{{product.id}}"><i class="icon-pencil"></i>&nbsp;Edit</button></div>
                                                       <div class="col-6">
                                                           <p class="product-price">₱ {{ product.price }}</p>
                                                       </div>
@@ -205,7 +196,7 @@
      </div>
    </div>
    {% for product in products %}
-   <div class="modal fade" id="{{ product.name }}Products" tabindex="-1" aria-labelledby="{{ product.name }}Products" aria-hidden="true">
+   <div class="modal fade" id="Products{{ product.id }}" tabindex="-1" aria-labelledby="Products{{ product.id }}" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -265,4 +256,6 @@
     </div>
   </div>
    {% endfor %}
+{% endblock %}
+{% block custom_js %}
 {% endblock %}

@@ -1,0 +1,55 @@
+{% load static %}
+<nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0">
+  <div class="container-fluid d-flex flex-column p-0">
+    <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#"><img class="rounded-circle" src="{% static 'staff_templates/assets/img/150607784_1734378716914298_4521171664303503947_n.jpg' %}" style="width: 70px;height: 70px;">
+      <div class="sidebar-brand-icon rotate-n-15"></div>
+        <div class="sidebar-brand-text mx-3"></div>
+    </a>
+    <hr class="sidebar-divider my-0">
+      <ul class="navbar-nav text-light" id="accordionSidebar">
+          <li class="nav-item">
+            {% url 'admin_home' as admin_home %}
+            <a class="nav-link {% if request.path == admin_home %} active {% endif %}" href="{{admin_home}}">
+              <i class="fas fa-tachometer-alt"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            {% url 'staff' as staff %}
+            <a class="nav-link {% if request.path == staff %} active {% endif %}" href="{{ staff }}">
+              <i class="fas fa-user"></i>
+              <span>Staff</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            {% url 'admin_company' as company %}
+            <a class="nav-link {% if request.path == company %} active {% endif %}" href="{{ company }}">
+              <i class="far fa-building"></i>
+              <span>Motor Company</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            {% url 'admin_motorcycle' as motorcycle %}
+            <a class="nav-link {% if request.path == motorcycle %} active {% endif %}" href="{{ motorcycle }}">
+              <i class="fas fa-motorcycle"></i>
+              <span>Motorcycle</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            {% url 'admin_products' as products %}
+            <a class="nav-link {% if request.path == products %} active {% endif %} " href="{{ products }}">
+              <i class="fas fa-database"></i><span>Products</span></a>
+          </li>
+          <li class="nav-item">
+            {% url 'transaction' as transaction %}
+            <a class="nav-link {% if request.path == transaction %} active {% endif %}" href="{{ transaction }}">
+              <i class="fas fa-inbox"></i>
+              <span>Transaction</span>
+            </a>
+          </li>
+
+      </ul>
+        <div class="text-center d-none d-md-inline">
+          <button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
+        </div>
+</nav>

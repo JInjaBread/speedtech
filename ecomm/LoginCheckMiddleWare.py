@@ -14,11 +14,12 @@ class LoginCheckMiddleWare(MiddlewareMixin):
             if user.user_type == "1":
                 if modulename == "ecomm.HODViews":
                     pass
+                elif request.path == reverse("home"):
+                    return redirect("admin_home")
                 elif modulename == "ecomm.views" or modulename == "django.views.static":
                     pass
                 else:
-                    pass
-                    #return redirect("add_school_year")
+                    return redirect("admin_home")
 
             elif user.user_type == "2":
                 if modulename == "ecomm.StaffViews":

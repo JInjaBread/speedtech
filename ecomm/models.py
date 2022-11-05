@@ -38,7 +38,7 @@ class Costumer(models.Model):
         return self.admin.first_name
 
 class Company(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     image= models.ImageField(upload_to='company')
     objects = models.Manager()
 
@@ -46,10 +46,10 @@ class Company(models.Model):
         return self.name
 
 class Motorcycle(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     image = models.ImageField(upload_to='motorcycle')
     anatomy_image = models.ImageField(upload_to='motorcycle_anatomy')
-    company = models.ForeignKey(Company, on_delete=models.DO_NOTHING, related_name='motorcycle')
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='motorcycle')
     objects = models.Manager()
 
     def __str__(self):
@@ -67,8 +67,8 @@ class Product(models.Model):
     image = models.ImageField(upload_to='product')
     price = models.FloatField()
     stock = models.IntegerField()
-    motorcycle = models.ForeignKey(Motorcycle, on_delete=models.DO_NOTHING)
-    category = models.ForeignKey(Category, on_delete=models.DO_NOTHING)
+    motorcycle = models.ForeignKey(Motorcycle, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     objects = models.Manager()
@@ -100,6 +100,18 @@ class Order(models.Model):
     def split_order(self):
         return self.items.split(",")
 
+class Transaction(models.Model):
+    ref_code = models.CharField(max_length=255)
+    costumer_name = models.CharField(max_length=255)
+    cashier_name = models.CharField(max_length=255)
+    item_list = models.CharField(max_length=255)
+    date = models.DateField(auto_now_add=True)
+    total = models.CharField(max_length=255)
+
+class UserLog(models.Model):
+    transaction_id = models.OneToOneField(Transaction, on_delete=models.CASCADE)
+    cashier_id = models.ForeignKey(Staffs, on_delete=models.CASCADE)
+    logs = models.CharField(max_length=255)
 
 @receiver(post_save, sender=CustomUser)
 # Now Creating a Function which will automatically insert data in HOD, Staff or Student

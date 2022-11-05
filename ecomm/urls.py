@@ -1,7 +1,7 @@
 from django.urls import path
 
 from . import views
-from . import CostumerViews, StaffViews
+from . import CostumerViews, StaffViews, HODViews
 
 urlpatterns = [
 	#Leave as empty string for base url
@@ -12,6 +12,28 @@ urlpatterns = [
 	path('signup', views.signup, name="signup"),
 	path('verify_otp', views.verify_otp, name="verify_otp"),
 	path('check_phone_exist', views.check_phone_exist, name="check_phone_exist"),
+
+	#path for admin
+	path('admin_home', HODViews.admin_home, name="admin_home"),
+	path('admin_company', HODViews.company, name="admin_company"),
+	path('admin_add_company', HODViews.add_company, name="admin_add_company"),
+	path('admin_edit_company/<company_id>', HODViews.edit_company, name="admin_edit_company"),
+	path('delete_company/<company_id>', HODViews.delete_company, name="delete_company"),
+	path('admin_motorcycle', HODViews.motorcycle, name="admin_motorcycle"),
+	path('admin_add_motorcycle', HODViews.add_motorcycle, name="admin_add_motorcycle"),
+	path('admin_edit_motorcycle/<motorcycle_id>', HODViews.edit_motorcycle, name="admin_edit_motorcycle"),
+	path('delete_motorcycle/<motorcycle_id>', HODViews.delete_motorcycle, name="delete_motorcycle"),
+	path('admin_products', HODViews.products, name="admin_products"),
+	path('admin_add_products', HODViews.admin_add_products, name="admin_add_products"),
+	path('admin_edit_products/<product_id>', HODViews.admin_edit_products, name="admin_edit_products"),
+	path('delete_products/<product_id>', HODViews.delete_products, name="delete_products"),
+	path('transaction', HODViews.transaction, name="transaction"),
+	path('get_transaction', HODViews.get_transaction, name="get_transaction"),
+	path('staff/', HODViews.staff, name="staff"),
+	path('get_staff/', HODViews.get_staff, name="get_staff"),
+	path('add_staff/', HODViews.add_staff, name="add_staff"),
+	path('edit_staff/<staff_id>', HODViews.edit_staff, name="edit_staff"),
+	path('staff/delete_staff/<staff_id>', HODViews.delete_staff, name="delete_staff"),
 
 	#path for costumer
 	path('costumer_home', CostumerViews.costumer_home, name="costumer_home"),
@@ -42,4 +64,5 @@ urlpatterns = [
 	path('set_ready', StaffViews.set_ready, name="set_ready"),
 	path('set_complete', StaffViews.set_complete, name="set_complete"),
 	path('cancel_order', StaffViews.cancel_order, name="cancel_order"),
+
 ]

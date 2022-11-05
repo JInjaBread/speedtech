@@ -12,18 +12,15 @@ from decimal import *
 
 class DecimalEncoder(json.JSONEncoder):
     def default(self, obj):
-        # 👇️ if passed in object is instance of Decimal
-        # convert it to a string
         if isinstance(obj, Decimal):
             return str(obj)
-        # 👇️ otherwise use the default behavior
         return json.JSONEncoder.default(self, obj)
 
-def send_notification(phone, ref_code):
+def send_notification(phone, ref_code, cashier):
     client = Client(settings.ACCOUNT_SID, settings.ACCOUNT_SECURITY_API_KEY)
     message = client.messages.create(
                               messaging_service_sid='MGfff7d060816fff6943af74d9cd59fc3b',
-                              body='Your order with reference code ' + str(ref_code) + ' is ready for pickup',
+                              body='Your order with reference code ' + str(ref_code) + ' is ready for pickup --' + str(cashier) + '-- Cashier Incharge',
                               to=phone
                           )
     print(message.sid)
@@ -219,7 +216,7 @@ def edit_product(request, product_id):
                 product.stock = stock
                 product.motorcycle = motorcycle
                 product.category = category
-                Product.image = image_file
+                product.image = image_file
                 product.save()
                 messages.success(request, "Saved Succesfully")
                 return redirect('products')
@@ -262,11 +259,11 @@ def set_ready(request):
     order_id = request.POST.get('id')
     print(order_id)
     order = Order.objects.get(id = order_id)
-
+    cashier = request.user.first_name+ ' ' + request.user.last_name
     try:
         order.status = "Ready For Pick Up"
         order.save()
-        send_notification(order.user.admin.username, order.ref_code)
+        send_notification(order.user.admin.username, order.ref_code, cashier)
         return JsonResponse({'response':'success', 'message':'Order is ready for pick up!'})
     except Exception as e:
         print(e)
@@ -276,8 +273,13 @@ def set_ready(request):
 def set_complete(request):
     order_id = request.POST.get('id')
     order = Order.objects.get(id = order_id)
-
+    costumer = Costumer.objects.get(id=order.user.id)
+    cashier = request.user
+    costumer_name = costumer.admin.first_name + ' ' + costumer.admin.last_name
+    cashier_name = cashier.first_name + ' ' + cashier.last_name
     try:
+        transaction_obj = Transaction(ref_code=order.ref_code, costumer_name=costumer_name, cashier_name=cashier_name, item_list=order.items, total=order.total)
+        transaction_obj.save()
         order.delete()
         return JsonResponse({'response':'success', 'message':'Order is Complete!'})
     except Exception as e:
@@ -303,3 +305,10 @@ def cancel_order(request):
         return JsonResponse({'response':'info', 'message':'Order has been canceled!'})
     except Exception as e:
         return JsonResponse({'response':'info', 'message':'Error!'})
+
+def products_category(request):
+    category = Category.objects.all()
+    context = {
+        "category": category
+    }
+    return render(request, 'staff/order.html', context)

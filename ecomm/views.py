@@ -43,7 +43,7 @@ def doLogin(request):
             login(request, user)
             user_type = user.user_type
             if user_type == '1':
-                pass
+                return redirect('admin_home')
             elif user_type == '2':
                 return redirect('staff_home')
             elif user_type == '3':

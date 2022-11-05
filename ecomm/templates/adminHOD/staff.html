@@ -1,0 +1,205 @@
+{% extends "adminHOD/base.html" %}
+{% load static %}
+{% block content %}
+{% include "adminHOD/sidebar.html" %}
+{% if messages %}
+  {% for message in messages %}
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="liveToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <strong class="me-auto">Speedtech</strong>
+        <small>Just Now</small>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        {{ message }}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+{% endif %}
+<div class="d-flex flex-column" id="content-wrapper">
+         <div id="content">
+             <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top">
+               <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle me-3" id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
+                   <form class="d-none d-sm-inline-block me-auto ms-md-3 my-2 my-md-0 mw-100 navbar-search">
+                       <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Search for ..."><button class="btn btn-primary py-0" type="button" style="background: rgb(254,0,2);border-color: var(--bs-red);"><i class="fas fa-search"></i></button></div>
+                   </form>
+                   <ul class="navbar-nav flex-nowrap ms-auto">
+                       <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#"><i class="fas fa-search"></i></a>
+                           <div class="dropdown-menu dropdown-menu-end p-3 animated--grow-in" aria-labelledby="searchDropdown">
+                               <form class="me-auto navbar-search w-100">
+                                   <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Search for ...">
+                                       <div class="input-group-append"><button class="btn btn-primary py-0" type="button"><i class="fas fa-search"></i></button></div>
+                                   </div>
+                               </form>
+                           </div>
+                       </li>
+                       <li class="nav-item dropdown no-arrow mx-1"></li>
+                       <li class="nav-item dropdown no-arrow mx-1">
+                           <div class="shadow dropdown-list dropdown-menu dropdown-menu-end" aria-labelledby="alertsDropdown"></div>
+                       </li>
+                       <div class="d-none d-sm-block topbar-divider"></div>
+                       <li class="nav-item dropdown no-arrow">
+                           <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#"><span class="d-none d-lg-inline me-2 text-gray-600 small">{{ request.user.first_name }} {{ request.user.last_name }}</span><img class="border rounded-circle img-profile" src="https://cdn-icons-png.flaticon.com/512/149/149071.png"></a>
+                               <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in"><a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile</a><a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Settings</a><a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Activity log</a>
+                                   <div class="dropdown-divider"></div><a class="dropdown-item" href="{% url 'logout_user' %}"><i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Logout</a>
+                               </div>
+                           </div>
+                       </li>
+                   </ul>
+               </div>
+             </nav>
+             <div class="container-fluid">
+               <div class="d-sm-flex justify-content-between align-items-center mb-4">
+                   <h3 class="text-dark mb-0">Staff</h3><button class="btn btn-primary btn-sm d-none d-sm-inline-block float-end" data-bs-toggle="modal" data-bs-target="#addCompany">+ Staff</button>
+               </div>
+             </div>
+             <div class="container">
+               <table class="table" id="tbl_staff">
+                 <thead>
+                   <tr>
+                     <th scope="col">#</th>
+                     <th scope="col">First Name</th>
+                     <th scope="col">Last Name</th>
+                     <th scope="col">Address</th>
+                     <th scope="col">Last Login</th>
+                     <th scope="col">Action</th>
+                   </tr>
+                 </thead>
+                 <tbody>
+                 </tbody>
+                 </table>
+             </div>
+         </div>
+         <footer class="bg-white sticky-footer">
+             <div class="container my-auto">
+                 <div class="text-center my-auto copyright"><span>Copyright © Brand 2022</span></div>
+             </div>
+         </footer>
+     </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+     <! -- Modal -->
+     <div class="modal fade" id="addCompany" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Add Staff</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form action="{% url 'add_staff' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+          <div class="modal-body">
+              <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">First Name</label>
+                <input type="text" class="form-control" aria-describedby="name" name="first_name">
+                <div id="emailHelp" class="form-text"></div>
+              </div>
+              <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Last Name</label>
+                <input type="text" class="form-control" aria-describedby="name" name="last_name">
+                <div id="emailHelp" class="form-text"></div>
+              </div>
+              <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">User Name</label>
+                <input type="text" class="form-control" aria-describedby="name" name="username">
+                <div id="emailHelp" class="form-text"></div>
+              </div>
+              <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Password</label>
+                <input type="password" class="form-control" aria-describedby="name" name="password">
+                <div id="emailHelp" class="form-text"></div>
+              </div>
+              <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Address</label>
+                <input type="text" class="form-control" aria-describedby="name" name="address">
+                <div id="emailHelp" class="form-text"></div>
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" style="background: rgb(254,0,2);border-color: var(--bs-red);">Save</button>
+          </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% for staff in staffs %}
+    <div class="modal fade" id="Edit{{ staff.id }}" tabindex="-1" aria-labelledby="Edit{{ staff.id }}" aria-hidden="true">
+     <div class="modal-dialog">
+       <div class="modal-content">
+         <div class="modal-header">
+           <h5 class="modal-title" id="exampleModalLabel">Edit Staff</h5>
+           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+         <form action="{% url 'edit_staff' staff.id %}" method="POST" enctype="multipart/form-data">
+           {% csrf_token %}
+         <div class="modal-body">
+           <div class="mb-3">
+             <label for="exampleInputEmail1" class="form-label">First Name</label>
+             <input type="text" class="form-control" aria-describedby="name" name="first_name" value="{{ staff.admin.first_name }}">
+             <div id="emailHelp" class="form-text"></div>
+           </div>
+           <div class="mb-3">
+             <label for="exampleInputEmail1" class="form-label">Last Name</label>
+             <input type="text" class="form-control" aria-describedby="name" name="last_name" value="{{ staff.admin.last_name }}">
+             <div id="emailHelp" class="form-text"></div>
+           </div>
+           <div class="mb-3">
+             <label for="exampleInputEmail1" class="form-label">User Name</label>
+             <input type="text" class="form-control" aria-describedby="name" name="username" value="{{ staff.admin.username }}">
+             <div id="emailHelp" class="form-text"></div>
+           </div>
+           <div class="mb-3">
+             <label for="exampleInputEmail1" class="form-label">Password</label>
+             <input type="password" class="form-control" aria-describedby="name" name="password">
+             <div id="emailHelp" class="form-text"></div>
+           </div>
+           <div class="mb-3">
+             <label for="exampleInputEmail1" class="form-label">Address</label>
+             <input type="text" class="form-control" aria-describedby="name" name="address" value="{{ staff.address }}">
+             <div id="emailHelp" class="form-text"></div>
+           </div>
+         </div>
+         <div class="modal-footer">
+           <button type="submit" class="btn btn-primary" style="background: rgb(254,0,2);border-color: var(--bs-red);">Save</button>
+         </div>
+         </form>
+       </div>
+     </div>
+   </div>
+    {% endfor %}
+{% endblock %}
+{% block custom_js %}
+<script>
+  $(document).ready(function () {
+     load_order();
+  });
+function load_order(){
+  $.ajax({
+    type:"GET",
+    url: "{% url 'get_staff' %}",
+    dataType: "json",
+    success: function(data){
+      var n = JSON.parse(data);
+      console.log(n);
+      $('#tbl_staff').DataTable({
+        "data": n,
+        "columns": [
+          { data: "id"},
+          { data: "first_name" },
+          { data: "last_name" },
+          { data: "address" },
+          { data: "last_login" },
+          {data: "",
+          mRender:function(data, type, row){
+              return '<button type="button" data-bs-toggle="modal" data-bs-target="#Edit'+ row.id +'" class="btn btn-light"><i class="fa fa-pencil" aria-hidden="true"></i></button> <a type="button"  href="delete_staff/'+row.id+'" class="btn btn-light"><i class="fa  fa-times" aria-hidden="true"></i></a>'
+          }}
+        ]
+    });
+    },
+    error: function(error){
+      console.log(error.responseText);
+    }
+  });
+}
+</script>
+{% endblock %}

@@ -69,38 +69,31 @@
                           <div class="container py-5">
                             <div class="row">
                               {% for product in products %}
-                              <div class="col-md-12 col-lg-4 mb-4 mb-lg-0">
-                                <div class="card">
-                                  <div class="d-flex justify-content-between p-3">
-                                    <p class="lead mb-0">{{ product.motorcycle.name }}</p>
-                                    <div
-                                      class="bg-info rounded-circle d-flex align-items-center justify-content-center shadow-1-strong"
-                                      style="width: 35px; height: 35px;">
-                                      <p class="text-white mb-0 small">x4</p>
+                              <div class="col-sm-6 col-md-4 product-item">
+                                <div class="product-container">
+                                    <div class="row">
+                                        <div class="col-md-12"><a class="product-image" href="#"><img src="{{ product.image.url }}"></a></div>
                                     </div>
-                                  </div>
-                                  <img src="{{ product.image.url }}"
-                                    class="card-img-top" alt="Laptop" />
-                                  <div class="card-body">
-                                    <div class="d-flex justify-content-between">
-                                      <p class="small">{{ product.category }}</p>
-                                      <p class="small text-danger"><s>₱{{ product.old_price }}</s></p>
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <h2><a href="#">{{ product.name }}</a></h2>
+                                        </div>
+                                        <div class="col-4"><a class="small-text" href="#">{{ product.motorcycle }}</a></div>
                                     </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <p class="product-description"> Available: {{ product.stock }}</p>
+                                            <p class="product-description">Price: ₱ {{ product.price }}</p>
+                                            <div class="row">
+                                                <div class="col-8"><button class="btn btn-light" type="button" onclick="add_to_cart({{product.id}})" ><i class="icon-trash"></i>&nbsp;<i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button></div>
+                                                <div class="col-4">
 
-                                    <div class="d-flex justify-content-between mb-3">
-                                      <h5 class="mb-0">{{ product.name }}</h5>
-                                      <h5 class="text-dark mb-0">₱{{ product.price }}</h5>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-
-                                    <div class="d-flex justify-content-between mb-2">
-                                      <p class="text-muted mb-0">Available: <span class="fw-bold">{{ product.stock }}</span></p>
-                                      <div class="ms-auto text-warning">
-                                          <button onclick="add_to_cart({{product.id}})" class="btn btn-sm text-dark p-0"> <i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>
-                                      </div>
-                                    </div>
-                                  </div>
                                 </div>
-                              </div>
+                            </div>
                               {% endfor %}
                             </div>
                           </div>
@@ -113,38 +106,31 @@
                               <div class="row">
                                 {% for product in products %}
                                   {% if product.category == category %}
-                                    <div class="col-md-12 col-lg-4 mb-4 mb-lg-0">
-                                      <div class="card">
-                                        <div class="d-flex justify-content-between p-3">
-                                          <p class="lead mb-0">{{ product.motorcycle.name }}</p>
-                                          <div
-                                            class="bg-info rounded-circle d-flex align-items-center justify-content-center shadow-1-strong"
-                                            style="width: 35px; height: 35px;">
-                                            <p class="text-white mb-0 small">x4</p>
-                                          </div>
+                                  <div class="col-sm-6 col-md-4 product-item">
+                                    <div class="product-container">
+                                        <div class="row">
+                                            <div class="col-md-12"><a class="product-image" href="#"><img src="{{ product.image.url }}"></a></div>
                                         </div>
-                                        <img src="{{ product.image.url }}"
-                                          class="card-img-top" alt="Laptop" />
-                                        <div class="card-body">
-                                          <div class="d-flex justify-content-between">
-                                            <p class="small">{{ product.category }}</p>
-                                            <p class="small text-danger"><s>₱{{ product.old_price }}</s></p>
-                                          </div>
-
-                                          <div class="d-flex justify-content-between mb-3">
-                                            <h5 class="mb-0">{{ product.name }}</h5>
-                                            <h5 class="text-dark mb-0">₱{{ product.price }}</h5>
-                                          </div>
-
-                                          <div class="d-flex justify-content-between mb-2">
-                                            <p class="text-muted mb-0">Available: <span class="fw-bold">{{ product.stock }}</span></p>
-                                            <div class="ms-auto text-warning">
-                                                <button onclick="add_to_cart({{product.id}})" class="btn btn-sm text-dark p-0"> <i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>
+                                        <div class="row">
+                                            <div class="col-8">
+                                                <h2><a href="#">{{ product.name }}</a></h2>
                                             </div>
-                                          </div>
+                                            <div class="col-4"><a class="small-text" href="#">{{ product.motorcycle }}</a></div>
                                         </div>
-                                      </div>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <p class="product-description"> Available: {{ product.stock }}</p>
+                                                <p class="product-description">Price: ₱ {{ product.price }}</p>
+                                                <div class="row">
+                                                    <div class="col-8"><button class="btn btn-light" type="button" onclick="add_to_cart({{product.id}})" ><i class="icon-trash"></i>&nbsp;<i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button></div>
+                                                    <div class="col-4">
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
+                                </div>
                                   {% endif %}
                                 {% endfor %}
                               </div>

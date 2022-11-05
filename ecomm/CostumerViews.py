@@ -127,7 +127,7 @@ def add_to_cart(request):
                 user=user,
                 ordered=False
             )
-            return JsonResponse({'response':'info', 'message':'Item is allready in the cart'})
+            return JsonResponse({'response':'success', 'message':'Item added to the cart'})
     else:
         cart = OrderItem(
             item=product,
