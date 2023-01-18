@@ -1,22 +1,7 @@
 {% extends 'costumer/base.html' %}
 {% load static %}
+{% load humanize %}
 {% block content %}
-{% if messages %}
-  {% for message in messages %}
-  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-    <div id="liveToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="toast-header">
-        <strong class="me-auto">Speedtech</strong>
-        <small>Just Now</small>
-        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-      </div>
-      <div class="toast-body">
-        {{ message }}
-      </div>
-    </div>
-  </div>
-  {% endfor %}
-{% endif %}
 <div class="profile-card">
       <div class="profile-back" style="background: rgb(254,0,2);"></div><img class="rounded-circle profile-pic" src="{% static 'costumer_templates/assets/img/150607784_1734378716914298_4521171664303503947_n.jpg' %}">
       <h3 class="profile-name" style="background: rgb(254,0,2);">BICOL SPEEDTECH MOTOR CORP.&nbsp;</h3>
@@ -61,37 +46,40 @@
                                     <h4>Empty</h4>
                                   {% else %}
                                     {% for item in cart %}
-                                        <div class="row mb-4 d-flex justify-content-between align-items-center">
-                                          <div class="col-md-2 col-lg-2 col-xl-2">
-                                            <img
-                                              src="{{ item.item.image.url }}"
-                                              class="img-fluid rounded-3" alt="Cotton T-shirt">
+                                        <form action="{% url 'update_cart' item.id %}" method="POST">
+                                          {% csrf_token %}
+                                          <div class="row mb-4 d-flex justify-content-between align-items-center">
+                                            <div class="col-md-2 col-lg-2 col-xl-2">
+                                              <img
+                                                src="{{ item.item.image.url }}"
+                                                class="img-fluid rounded-3" alt="Cotton T-shirt">
+                                            </div>
+                                            <div class="col-md-3 col-lg-3 col-xl-3">
+                                              <h6 class="text-muted">{{ item.item.category }}</h6>
+                                              <h6 class="text-black mb-0">{{ item.item.name }}</h6>
+                                            </div>
+                                            <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
+                                              <button class="btn btn-link px-2"
+                                                onclick="this.parentNode.querySelector('input[type=number]').stepDown()" type="button">
+                                                <i class="fa fa-minus"></i>
+                                              </button>
+  
+                                              <input id="quantity" min="0" style="width: 60px;" name="quantity" value="{{ item.quantity }}" type="number"
+                                                class="form-control form-control-sm" />
+  
+                                              <button class="btn btn-link px-2"
+                                                onclick="this.parentNode.querySelector('input[type=number]').stepUp()" type="button">
+                                                <i class="fa fa-plus"></i>
+                                              </button>
+                                            </div>
+                                            <div class="col-md-1 col-lg-1 col-xl-1">
+                                              <button class="btn text-muted" type="submit">Update</button>
+                                            </div>
+                                            <div class="col-md-1 col-lg-1 col-xl-1 text-end">
+                                              <a href="{% url 'remove_from_cart' item.id %}" class="text-muted"><i class="fa fa-times"></i></a>
+                                            </div>
                                           </div>
-                                          <div class="col-md-3 col-lg-3 col-xl-3">
-                                            <h6 class="text-muted">{{ item.item.category }}</h6>
-                                            <h6 class="text-black mb-0">{{ item.item.name }}</h6>
-                                          </div>
-                                          <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
-                                            <button class="btn btn-link px-2"
-                                              onclick="this.parentNode.querySelector('input[type=number]').stepDown()" type="button">
-                                              <i class="fa fa-minus"></i>
-                                            </button>
-
-                                            <input id="form1" min="0" style="width: 60px;" name="quantity" value="{{ item.quantity }}" type="number"
-                                              class="form-control form-control-sm" />
-
-                                            <button class="btn btn-link px-2"
-                                              onclick="this.parentNode.querySelector('input[type=number]').stepUp()" type="button">
-                                              <i class="fa fa-plus"></i>
-                                            </button>
-                                          </div>
-                                          <div class="col-md-1 col-lg-1 col-xl-1">
-                                            <button onclick="update_cart({{item.id}})" class="btn text-muted" type="submit">Update</button>
-                                          </div>
-                                          <div class="col-md-1 col-lg-1 col-xl-1 text-end">
-                                            <a href="{% url 'remove_from_cart' item.id %}" class="text-muted"><i class="fa fa-times"></i></a>
-                                          </div>
-                                        </div>
+                                        </form>
                                     {% endfor %}
                                   {% endif %}
                                   <hr class="my-4">
@@ -109,14 +97,14 @@
 
                                   <div class="d-flex justify-content-between mb-4">
                                     <h5 class="text-uppercase">items {{ cart.count }}</h5>
-                                    <h5>₱ {{ total|floatformat:2 }}</h5>
+                                    <h5>₱ {{ total|floatformat:2|intcomma }}</h5>
                                   </div>
 
                                   <hr class="my-4">
 
                                   <div class="d-flex justify-content-between mb-5">
                                     <h5 class="text-uppercase">Total price</h5>
-                                    <h5>₱ {{ total|floatformat:2 }}</h5>
+                                    <h5>₱ {{ total|floatformat:2|intcomma }}</h5>
                                   </div>
 
                                   {% if cart.count == 0 %}
@@ -143,36 +131,6 @@
 
 {% block custom_js %}
 <script>
-function update_cart(id){
-  var id = id;
-  var quantity = $('#form1').val();
-  if(quantity == 0){
-    toastr.error("The quantity must not be equal to zero!");
-  }else{
-    $.ajax({
-      url: "{% url 'update_cart' %}",
-      type: "POST",
-      data:{
-        id: id,
-        quantity: quantity
-      },
-      dataType: "json",
-      success: function(data){
-        if(data.response == "success"){
-          toastr.success(data.message);
-          setTimeout(function () {
-          location.reload(true);
-        }, 2000);
-        }else{
-          toastr.error(data.message);
-        }
-      },
-      error: function(error){
-        console.log(error.responseText);
-      }
-    });
-  }
-}
 
 function make_order(){
   $.ajax({
@@ -195,4 +153,21 @@ function make_order(){
 }
 
 </script>
+{% if messages %}
+          <div class="form-group">
+          <div class="col-12">
+              {% for message in messages %}
+              {% if message.tags == "error" %}
+                <script>
+                  toastr.error("{{ message }}")
+                </script>
+              {% elif message.tags == "success" %}
+                  <script>
+                    toastr.success("{{ message }}")
+                  </script>
+              {% endif %}
+              {% endfor %}
+          </div>
+          </div>
+{% endif %}
 {% endblock custom_js %}

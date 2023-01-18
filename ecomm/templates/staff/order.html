@@ -112,7 +112,10 @@ function load_order(){
           { data: "id"},
           { data: "ref_code" },
           { data: "status" },
-          { data: "total" },
+          { data: "",
+          mRender:function(data, type, row){
+            return '<p>₱ '+ parseFloat(row.total).toLocaleString() +'<p>'
+          } },
           { data: "items" },
           {data: "",
           mRender:function(data, type, row){

@@ -2,29 +2,14 @@
 {% load static %}
 {% block content %}
 {% include "adminHOD/sidebar.html" %}
-{% if messages %}
-  {% for message in messages %}
-  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-    <div id="liveToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="toast-header">
-        <strong class="me-auto">Speedtech</strong>
-        <small>Just Now</small>
-        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-      </div>
-      <div class="toast-body">
-        {{ message }}
-      </div>
-    </div>
-  </div>
-  {% endfor %}
-{% endif %}
 <div class="d-flex flex-column" id="content-wrapper">
         <div id="content">
             <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top">
               <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle me-3" id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
-                  <form class="d-none d-sm-inline-block me-auto ms-md-3 my-2 my-md-0 mw-100 navbar-search">
-                      <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Search for ..."><button class="btn btn-primary py-0" type="button" style="background: rgb(254,0,2);border-color: var(--bs-red);"><i class="fas fa-search"></i></button></div>
-                  </form>
+                <form class="d-none d-sm-inline-block me-auto ms-md-3 my-2 my-md-0 mw-100 navbar-search" action="{% url 'admin_motorcycle' %}">
+                  <div class="input-group">
+                   <input class="bg-light form-control border-0 small" type="text" placeholder="Search for ..." name="search"><button class="btn btn-primary py-0" type="submit" style="background: rgb(254,0,2);border-color: var(--bs-red);"><i class="fas fa-search"></i></button></div>
+                </form>
                   <ul class="navbar-nav flex-nowrap ms-auto">
                       <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#"><i class="fas fa-search"></i></a>
                           <div class="dropdown-menu dropdown-menu-end p-3 animated--grow-in" aria-labelledby="searchDropdown">
@@ -87,7 +72,7 @@
                                                     <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#Edit{{ motorcycle.id }}" type="button"><i class="icon-pencil"></i>&nbsp;Edit</button>
                                                   </div>
                                                   <div class="col-4">
-                                                    <a class="btn btn-light" href="{% url 'delete_motorcycle' motorcycle.id %}"><i class="icon-trash"></i>&nbsp;Delete</a>
+                                                    <button class="btn btn-light" onclick="delete_motorcycle({{ motorcycle.id }})"><i class="icon-trash"></i>&nbsp;Delete</button>
                                                   </div>
                                               </div>
                                           </div>
@@ -119,7 +104,7 @@
                                                     <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#Edit{{ motorcycle.id }}" type="button"><i class="icon-pencil"></i>&nbsp;Edit</button>
                                                   </div>
                                                   <div class="col-4">
-                                                    <a class="btn btn-light" href="{% url 'delete_motorcycle' motorcycle.id %}"><i class="icon-trash"></i>&nbsp;Delete</a>
+                                                    <button class="btn btn-light" onclick="delete_motorcycle({{ motorcycle.id }})"><i class="icon-trash"></i>&nbsp;Delete</button>
                                                   </div>
                                               </div>
                                           </div>
@@ -149,16 +134,15 @@
            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
          </div>
          <form action="{% url 'admin_add_motorcycle' %}" method="POST" enctype="multipart/form-data">
-           {% csrf_token %}
          <div class="modal-body">
              <div class="mb-3">
                <label for="exampleInputEmail1" class="form-label">Motorcycle Name</label>
-               <input type="text" class="form-control" aria-describedby="name" name="name">
-               <div id="emailHelp" class="form-text"></div>
+               <input type="text" class="form-control" id="name" aria-describedby="name" name="name">
+               <div id="error_name" class="form-text text-danger"></div>
              </div>
              <div class="mb-3">
                <label for="exampleInputEmail1" class="form-label">Motorcycle Company</label>
-               <select name="company" class="form-select">
+               <select id="company" name="company" class="form-select">
                  {% for company in company %}
                    <option value="{{ company.id }}">{{ company.name }}</option>
                  {% endfor %}
@@ -166,15 +150,17 @@
              </div>
              <div class="mb-3">
                <label for="exampleInputPassword1" class="form-label">Image</label>
-               <input type="file" class="form-control" name="file">
+               <input type="file" class="form-control" id="file">
+               <div id="error_file" class="form-text text-danger"></div>
              </div>
              <div class="mb-3">
               <label for="exampleInputPassword1" class="form-label">Anatomy Image</label>
-               <input type="file" class="form-control" name="anatomy">
+               <input type="file" class="form-control" id="file_a">
+               <div id="error_file_a" class="form-text text-danger"></div>
              </div>
          </div>
          <div class="modal-footer">
-           <button type="submit" class="btn btn-primary" style="background: rgb(254,0,2);border-color: var(--bs-red);">Save</button>
+           <button type="button" id="saveinfo" class="btn btn-primary" style="background: rgb(254,0,2);border-color: var(--bs-red);">Save</button>
          </div>
          </form>
        </div>
@@ -189,13 +175,14 @@
           <h5 class="modal-title" id="exampleModalLabel">Edit Motorcycle</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <form action="{% url 'admin_edit_motorcycle' motorcycle.id %}" method="POST" enctype="multipart/form-data">
+        <form method="POST" action="{% url 'admin_edit_motorcycle' motorcycle.id %} " enctype="multipart/form-data">
           {% csrf_token %}
         <div class="modal-body">
+          <input type="text" id="mid" name="" value="{{motorcycle.id}}" hidden>
             <div class="mb-3">
               <label for="exampleInputEmail1" class="form-label">Motorcycle Name</label>
               <input type="text" class="form-control" aria-describedby="name" name="name" value="{{ motorcycle.name }}">
-              <div id="emailHelp" class="form-text"></div>
+              <div id="error_en" class="form-text text-danger"></div>
             </div>
             <div class="mb-3">
               <label for="exampleInputEmail1" class="form-label">Motorcycle Company</label>
@@ -215,7 +202,7 @@
             </div>
             <div class="mb-3">
              <label for="exampleInputPassword1" class="form-label">Anatomy Image</label>
-              <input type="file" class="form-control" name="anatomy">
+              <input type="file" class="form-control" name="file_a">
             </div>
         </div>
         <div class="modal-footer">
@@ -226,4 +213,122 @@
     </div>
   </div>
    {% endfor %}
+{% endblock %}
+{% block custom_js %}
+  <script>
+    $('#saveinfo').click(function(){
+    if($.trim($('#name').val()).length == 0){
+        error_name = 'Field is required';
+        $('#error_name').text(error_name);
+      }
+      else{
+        error_name = '';
+        $('#error_name').text(error_name);
+      }
+      if($.trim($('#file').val()).length == 0){
+          error_file = 'Field is required';
+          $('#error_file').text(error_file);
+      }
+      else{
+        error_file= '';
+          $('#error_file').text(error_file);
+      }
+      if($.trim($('#file_a').val()).length == 0){
+          error_file_a = 'Field is required';
+          $('#error_file_a').text(error_file_a);
+      }
+      else{
+        error_file_a= '';
+          $('#error_file_a').text(error_file_a);
+      }
+
+
+      if (error_name != '' || error_file != '' || error_file_a != '') {
+       toastr.error("Correct error in the form")
+     }else{
+      var file_a = $('#file_a')[0].files[0]
+      var file = $('#file')[0].files[0]
+      var name = $("#name").val()
+      var company = $("#company").val()
+      var data = new FormData()
+      data.append('file', file)
+      data.append('name', name)
+      data.append('file_a', file_a)
+      data.append('company', company)
+       console.log(data)
+       $.ajax({
+         type: "POST",
+         url: "{% url 'admin_add_motorcycle' %}",
+         processData: false,
+         contentType: false,
+         data: data,
+         dataType: "JSON",
+         success:function(response){
+           if(response.status == "success" ){
+             $('#addMotorcycle').modal('hide');
+             toastr.success(response.message)
+             setTimeout(function () {
+               location.reload(true);
+             }, 2000);
+           }else if (response.status == "error") {
+             toastr.error(response.message)
+           }
+         },
+       });
+     }
+
+  });
+  function delete_motorcycle(id){
+    var id = id;
+    Swal.fire({
+      title: 'Do you want to delete this data?',
+      showDenyButton: true,
+      showCancelButton: false,
+      confirmButtonText: 'Yes',
+      denyButtonText: 'No',
+      customClass: {
+        actions: 'my-actions',
+        cancelButton: 'order-1 right-gap',
+        confirmButton: 'order-2',
+        denyButton: 'order-3',
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          type: "POST",
+         url: "{% url 'delete_motorcycle' %}",
+         data: {
+          'id': id
+         },
+         dataType: "JSON",
+         success:function(response){
+          Swal.fire(response.message, '', response.status).then((result) =>{
+            location.reload(true)
+          })
+         }
+        })
+        
+      } else if (result.isDenied) {
+        Swal.fire('Changes are not saved', '', 'info')
+      }
+    })
+  }
+  </script>
+{% if messages %}
+<div class="form-group">
+<div class="col-12">
+    {% for message in messages %}
+    {% if message.tags == "error" %}
+      <script>
+        toastr.error("{{ message }}")
+      </script>
+    {% elif message.tags == "success" %}
+        <script>
+          toastr.success("{{ message }}")
+        </script>
+    {% endif %}
+    {% endfor %}
+</div>
+</div>
+{% endif %}
 {% endblock %}

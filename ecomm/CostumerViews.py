@@ -5,12 +5,18 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from .models import *
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 
 def costumer_home(request):
+
+    if 'search' in request.GET:
+        search = request.GET['search']
+        all_motorcycle = Motorcycle.objects.filter(name__icontains=search)
+    else:
+        all_motorcycle = Motorcycle.objects.all()
     user = Costumer.objects.get(admin=request.user)
     cart = OrderItem.objects.filter(user_id=user.id)
     company = Company.objects.all()
-    all_motorcycle = Motorcycle.objects.all()
     order_count = 0
     order_obj = []
     order = Order.objects.filter(user_id=user.id)
@@ -69,7 +75,12 @@ def motorcycle(request, motorcycle_name):
     cart = OrderItem.objects.filter(user_id=user.id)
     motorcycle = Motorcycle.objects.get(name = motorcycle_name)
     category = Category.objects.all()
-    products = Product.objects.filter(motorcycle = motorcycle)
+    product = Product.objects.filter(motorcycle = motorcycle)
+    if 'search' in request.GET:
+        search = request.GET['search']
+        products = product.filter(name__icontains=search)
+    else:
+        products = product
     order_count = 0
     order_obj = []
     order = Order.objects.filter(user_id=user.id)
@@ -91,24 +102,26 @@ def motorcycle(request, motorcycle_name):
 
     return render(request, 'costumer/costumer_products_view.html', context)
 
-@csrf_exempt
-def update_cart(request):
-    item_id = request.POST.get('id')
+def update_cart(request, item_id):
     quantity = request.POST.get('quantity')
+    print(quantity)
     user = Costumer.objects.get(admin=request.user)
     cart = OrderItem.objects.filter(user_id=user.id)
     cart_to_update = cart.get(id=item_id)
     product = Product.objects.get(id=cart_to_update.item.id)
     if quantity != '0':
         if int(quantity) > product.stock:
-            return JsonResponse({'response':'error', 'message':'Quantity must not be over valued to the stock!'})
+            messages.error(request, "Quantity Error")
+            return redirect(request.META['HTTP_REFERER'])
         else:
             try:
                 cart_to_update.quantity = quantity
                 cart_to_update.save()
-                return JsonResponse({'response':'success', 'message':'Update Cart Success!'})
+                messages.info(request, "Item was updated")
+                return redirect(request.META['HTTP_REFERER'])
             except:
-                return JsonResponse({'response':'error', 'message':'Please Try Again!!'})
+                messages.info(request, "Error on Request!.")
+                return redirect(request.META['HTTP_REFERER'])
 
 @csrf_exempt
 def add_to_cart(request):
@@ -201,3 +214,13 @@ def make_order(request):
     except Exception as e:
         print(e)
         return JsonResponse({'response':'error', 'message':'Order Success!'})
+
+def search_result(request, search):
+    cont = Q(name__icontains=search)
+    motorcycle = Motorcycle.objects.filter(name=cont)
+    products = Product.objects.filter(name=cont)
+    context = {
+        'motorcycle': motorcycle,
+        'products': products
+    }
+    return render(request, 'costumer/costumer_search_view.html', context)

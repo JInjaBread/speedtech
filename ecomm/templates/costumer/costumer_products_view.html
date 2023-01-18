@@ -40,13 +40,19 @@
           </ul>
         </div>
         </div>
-          <div class="col-md-12">
-              <div class="row padMar">
-                  <div class="col padMar">
-                      <div class="input-group"><input class="form-control autocomplete" type="text" placeholder="Search"><button class="btn btn-warning" type="button" style="background: rgb(254,0,2);"><i class="fa fa-search"></i></button></div>
+        <form action="{% url 'motorcycle' motorcycle.name %}">
+          {% csrf_token %}
+        <div class="col-md-12">
+            <div class="row padMar">
+                <div class="col padMar">
+                    <div class="input-group">
+                          <input class="form-control autocomplete" type="text" placeholder="Search" name="search">
+                          <button class="btn btn-warning" type="submit" style="background: rgb(254,0,2);"><i class="fa fa-search"></i></button>
                   </div>
-              </div>
-          </div>
+                </div>
+            </div>
+        </div>
+      </form>
       <div class="row">
         <img src="{{ motorcycle.anatomy_image.url }}" class="img-fluid" alt="...">
       </div>

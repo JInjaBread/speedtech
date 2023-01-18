@@ -2,20 +2,15 @@
 {% load static %}
 {% block content %}
 {% include "adminHOD/sidebar.html" %}
-{% if messages %}
-  {% for message in messages %}
-   <script>
-     alert("{{ message }}")
-   </script>
-  {% endfor %}
-{% endif %}
+
 <div class="d-flex flex-column" id="content-wrapper">
         <div id="content">
             <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top">
                 <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle me-3" id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
-                    <form class="d-none d-sm-inline-block me-auto ms-md-3 my-2 my-md-0 mw-100 navbar-search">
-                        <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Search for ..."><button class="btn btn-primary py-0" type="button" style="background: rgb(254,0,2);border-color: var(--bs-red);"><i class="fas fa-search"></i></button></div>
-                    </form>
+                  <form class="d-none d-sm-inline-block me-auto ms-md-3 my-2 my-md-0 mw-100 navbar-search" action="{% url 'admin_products' %}">
+                    <div class="input-group">
+                     <input class="bg-light form-control border-0 small" type="text" placeholder="Search for ..." name="search"><button class="btn btn-primary py-0" type="submit" style="background: rgb(254,0,2);border-color: var(--bs-red);"><i class="fas fa-search"></i></button></div>
+                  </form>
                     <ul class="navbar-nav flex-nowrap ms-auto">
                         <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#"><i class="fas fa-search"></i></a>
                             <div class="dropdown-menu dropdown-menu-end p-3 animated--grow-in" aria-labelledby="searchDropdown">
@@ -81,7 +76,7 @@
                                             <div class="row">
                                                 <div class="col-8"><button class="btn btn-light" type="button" data-bs-toggle="modal" data-bs-target="#Products{{product.id}}"><i class="icon-pencil"></i>&nbsp;Edit</button></div>
                                                 <div class="col-4">
-                                                  <a class="btn btn-light" type="button" href="{% url 'delete_products' product.id %}" ><i class="icon-trash"></i>&nbsp;Delete</a>
+                                                  <button class="btn btn-light" type="button" onclick="delete_product({{product.id}})" ><i class="icon-trash"></i>&nbsp;Delete</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -119,7 +114,7 @@
                                                   <div class="row">
                                                       <div class="col-8"><button class="btn btn-light" type="button" data-bs-toggle="modal" data-bs-target="#Products{{product.id}}"><i class="icon-pencil"></i>&nbsp;Edit</button></div>
                                                       <div class="col-4">
-                                                        <a class="btn btn-light" type="button" href="{% url 'delete_products' product.id %}" ><i class="icon-trash"></i>&nbsp;Delete</a>
+                                                        <button class="btn btn-light" type="button" onclick="delete_product({{product.id}})" ><i class="icon-trash"></i>&nbsp;Delete</button>
                                                       </div>
                                                   </div>
                                               </div>
@@ -148,30 +143,29 @@
      <div class="modal-dialog">
        <div class="modal-content">
          <div class="modal-header">
-           <h5 class="modal-title" id="exampleModalLabel">Add Motorcycle</h5>
+           <h5 class="modal-title" id="exampleModalLabel">Add Product</h5>
            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
          </div>
-         <form action="{% url 'admin_add_products' %}" method="POST" enctype="multipart/form-data">
-           {% csrf_token %}
+         <form method="POST" enctype="multipart/form-data">
          <div class="modal-body">
              <div class="mb-3">
                <label for="exampleInputEmail1" class="form-label">Product Name</label>
-               <input type="text" class="form-control" aria-describedby="name" name="name">
-               <div id="emailHelp" class="form-text"></div>
+               <input type="text" class="form-control" aria-describedby="name" id="name">
+               <div id="error_name" class="form-text text-danger"></div>
              </div>
              <div class="mb-3">
                <label for="exampleInputEmail1" class="form-label">Price</label>
-               <input type="text" step="any" class="form-control" aria-describedby="price" name="price">
-               <div id="emailHelp" class="form-text"></div>
+               <input type="text" step="any" class="form-control" aria-describedby="price" id="price">
+               <div id="error_price" class="form-text text-danger"></div>
              </div>
              <div class="mb-3">
                <label for="exampleInputEmail1" class="form-label">Stock</label>
-               <input type="number" class="form-control" aria-describedby="stock" name="stock">
-               <div id="emailHelp" class="form-text"></div>
+               <input type="text" class="form-control" aria-describedby="stock" id="stock">
+               <div id="error_stock" class="form-text text-danger"></div>
              </div>
              <div class="mb-3">
                <label for="exampleInputEmail1" class="form-label">Motorcycle</label>
-               <select name="motorcycle" class="form-select">
+               <select id="motorcycle" class="form-select">
                  {% for motorcycle in motorcycle %}
                    <option value="{{ motorcycle.id }}">{{ motorcycle.company.name }}  {{ motorcycle.name }}</option>
                  {% endfor %}
@@ -179,7 +173,7 @@
              </div>
              <div class="mb-3">
                <label for="exampleInputEmail1" class="form-label">Category</label>
-               <select name="category" class="form-select">
+               <select id="category" class="form-select">
                  {% for category in categories %}
                    <option value="{{ category.id }}">{{ category.name }}</option>
                  {% endfor %}
@@ -187,11 +181,12 @@
              </div>
              <div class="mb-3">
                <label for="exampleInputPassword1" class="form-label">Image</label>
-               <input type="file" class="form-control" name="file">
+               <input type="file" class="form-control" id="file">
+               <div id="error_file" class="form-text text-danger"></div>
              </div>
          </div>
          <div class="modal-footer">
-           <button type="submit" class="btn btn-primary" style="background: rgb(254,0,2);border-color: var(--bs-red);">Save</button>
+           <button type="button" id="saveinfo" class="btn btn-primary" style="background: rgb(254,0,2);border-color: var(--bs-red);">Save</button>
          </div>
          </form>
        </div>
@@ -260,4 +255,137 @@
    {% endfor %}
 {% endblock %}
 {% block custom_js %}
+<script>
+  $('#saveinfo').click(function(){
+  if($.trim($('#name').val()).length == 0){
+      error_name = 'Field is required';
+      $('#error_name').text(error_name);
+    }
+    else{
+      error_name = '';
+      $('#error_name').text(error_name);
+    }
+    if($.trim($('#file').val()).length == 0){
+      error_file = 'Field is required';
+      $('#error_file').text(error_file);
+    }
+    else{
+      error_file= '';
+      $('#error_file').text(error_file);
+    }
+    if($.trim($('#price').val()).length == 0){
+      error_price = 'Field is required';
+      $('#error_price').text(error_price);
+    }
+    else if($.isNumeric($('#price').val()) == false){
+      error_price= 'This must be a number!';
+      $('#error_price').text(error_price);
+    }else{
+      error_price = '';
+      $('#error_price').text(error_price);
+    }
+    if($.trim($('#stock').val()).length == 0){
+      error_stock = 'Field is required';
+      $('#error_stock').text(error_stock);
+    }
+    else if($.isNumeric($('#stock').val()) == false){
+      error_stock= 'This must be a number!';
+      $('#error_stock').text(error_stock);
+    }else{
+      error_stock = '';
+      $('#error_stock').text(error_stock);
+    }
+
+
+    if (error_name != '' || error_file != '' || error_price != '' || error_stock != '') {
+     toastr.error("Correct error in the form")
+   }else{
+    var file = $('#file')[0].files[0]
+    var stock = $('#stock').val()
+    var price = $('#price').val()
+    var name = $("#name").val()
+    var category = $("#category").val()
+    var motorcycle = $("#motorcycle").val()
+    var data = new FormData()
+    data.append('file', file)
+    data.append('name', name)
+    data.append('category', category)
+    data.append('motorcycle', motorcycle)
+    data.append('price', price)
+    data.append('stock', stock)
+     $.ajax({
+       type: "POST",
+       url: "{% url 'admin_add_products' %}",
+       processData: false,
+       contentType: false,
+       data: data,
+       dataType: "JSON",
+       success:function(response){
+         if(response.status == "success" ){
+           $('#addMotorcycle').modal('hide');
+           toastr.success(response.message)
+           setTimeout(function () {
+             location.reload(true);
+           }, 2000);
+         }else if (response.status == "error") {
+           toastr.error(response.message)
+         }
+       },
+     });
+   }
+
+});
+function delete_product(id){
+  var id = id;
+  Swal.fire({
+    title: 'Do you want to delete this data?',
+    showDenyButton: true,
+    showCancelButton: false,
+    confirmButtonText: 'Yes',
+    denyButtonText: 'No',
+    customClass: {
+      actions: 'my-actions',
+      cancelButton: 'order-1 right-gap',
+      confirmButton: 'order-2',
+      denyButton: 'order-3',
+    }
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $.ajax({
+        type: "POST",
+       url: "{% url 'delete_products' %}",
+       data: {
+        'id': id
+       },
+       dataType: "JSON",
+       success:function(response){
+        Swal.fire(response.message, '', response.status).then((result) =>{
+          location.reload(true)
+        })
+       }
+      })
+      
+    } else if (result.isDenied) {
+      Swal.fire('Changes are not saved', '', 'info')
+    }
+  })
+}
+</script>
+{% if messages %}
+          <div class="form-group">
+          <div class="col-12">
+              {% for message in messages %}
+              {% if message.tags == "error" %}
+                <script>
+                  toastr.error("{{ message }}")
+                </script>
+              {% elif message.tags == "success" %}
+                  <script>
+                    toastr.success("{{ message }}")
+                  </script>
+              {% endif %}
+              {% endfor %}
+          </div>
+          </div>
+{% endif %}
 {% endblock %}

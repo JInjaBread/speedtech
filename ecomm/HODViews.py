@@ -10,13 +10,13 @@ from django.views.decorators.csrf import csrf_exempt
 from decimal import *
 from django.views import View
 from xhtml2pdf import pisa
+from datetime import datetime, timedelta
 
 class DecimalEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Decimal):
             return str(obj)
         return json.JSONEncoder.default(self, obj)
-
 def admin_home(request):
     order = Order.objects.all()
     order_obj = []
@@ -37,34 +37,40 @@ def admin_home(request):
     return render(request, 'adminHOD/admin_home.html', context)
 
 def company(request):
-    company = Company.objects.all()
-
+    if 'search' in request.GET:
+        search = request.GET['search']
+        company = Company.objects.filter(name__icontains=search)
+    else:
+        company = Company.objects.all()
     context = {
         "company": company
     }
     return render(request, 'adminHOD/company.html', context)
 
+@csrf_exempt
 def add_company(request):
     if request.method != "POST":
         messages.error(request, "Invalid Method!")
         return redirect('admin_home')
     else:
         name = request.POST.get("name")
-
         if len(request.FILES) != 0:
-            image_file = request.FILES['file']
+            image_file = request.FILES.get('file')
         else:
             image_file = None
+            print(True)
 
         try:
             company = Company(name=name, image=image_file)
-            company.save()
-            messages.success(request, "Company saved Succesfully")
-            return redirect('admin_company')
+            if image_file == None:
+                return JsonResponse({'status': 'error', 'message': 'Error Adding Company!'})
+            else:
+                company.save()
+                return JsonResponse({'status': 'success', 'message': 'Add Company Success'})
         except Exception as e:
             print(e)
             messages.error(request,"Failed to save")
-            return redirect('admin_company')
+            return JsonResponse({'status': 'error', 'message': 'Error Adding Company!'})
 
 def edit_company(request, company_id):
     if request.method != "POST":
@@ -98,28 +104,32 @@ def edit_company(request, company_id):
             except:
                 messages.error(request, "Error on Submit")
                 return redirect('admin_company')
-
-def delete_company(request, company_id):
-    company = Company.objects.get(id=company_id)
+@csrf_exempt
+def delete_company(request):
+    id = request.POST.get('id')
+    company = Company.objects.get(id=id)
 
     try:
         company.delete()
-        messages.success(request, "Deleted Succesfully")
-        return redirect('admin_company')
+        return JsonResponse({'status': 'success', 'message': 'Delete Company Success'})
     except Exception as e:
         print(e)
-        messages.error(request, "Error on Submit")
-        return redirect('admin_company')
+        return JsonResponse({'status': 'error', 'message': 'Error Deleting Company!'})
 
 def motorcycle(request):
     company = Company.objects.all()
-    motorcycle = Motorcycle.objects.all()
+    if 'search' in request.GET:
+        search = request.GET['search']
+        motorcycle = Motorcycle.objects.filter(name__icontains=search)
+    else:
+        motorcycle = Motorcycle.objects.all()
     context = {
         "motorcycle": motorcycle,
         "company": company
     }
     return render(request, 'adminHOD/motorcycle.html', context)
 
+@csrf_exempt
 def add_motorcycle(request):
     if request.method != "POST":
         messages.error(request, "Invalid Method ")
@@ -127,19 +137,16 @@ def add_motorcycle(request):
     else:
         name = request.POST.get('name')
         company = request.POST.get('company')
-        print(company)
-        image_file = request.FILES['file']
-        anatomy_image = request.FILES['anatomy']
+        image_file = request.FILES.get('file')
+        anatomy_image = request.FILES.get('file_a')
         company_obj = Company.objects.get(id=company)
 
     try:
         motorcycle = Motorcycle(name=name, company = company_obj ,image = image_file, anatomy_image=anatomy_image)
         motorcycle.save()
-        messages.success(request, "Motorcycle Save Sucessfully")
-        return redirect('admin_motorcycle')
+        return JsonResponse({'status': 'success', 'message': 'Motorcycle Save Succesfully'})
     except:
-        messages.error(request, "Motorcycle Save Unsucessfull")
-        return redirect('admin_motorcycle')
+        return JsonResponse({'status': 'error', 'message': 'Error Saving Motorcycle!'})
 
 def edit_motorcycle(request, motorcycle_id):
     if request.method != "POST":
@@ -150,18 +157,8 @@ def edit_motorcycle(request, motorcycle_id):
         name = request.POST.get('name')
         company = request.POST.get('company')
         company_obj = Company.objects.get(id=company)
-        anatomy_check = request.POST.get('anatomy')
-        image_check = request.POST.get('file')
-
-        if image_check != "":
-            image_file = request.FILES['file']
-        else:
-            image_file = None
-
-        if anatomy_check != "":
-            anatomy_image = request.FILES['anatomy']
-        else:
-            anatomy_image = None
+        anatomy_image = request.FILES.get('file_a')
+        image_file = request.FILES.get('file')
 
 
         if image_file == None:
@@ -170,7 +167,7 @@ def edit_motorcycle(request, motorcycle_id):
                 motorcycle.company = company_obj
                 motorcycle.anatomy_image = anatomy_image
                 motorcycle.save()
-                messages.success(request, "Saved Succesfully")
+                messages.success(request, "Motorcycle saved")
                 return redirect('admin_motorcycle')
             except:
                 messages.error(request, "Error on Submit")
@@ -182,7 +179,7 @@ def edit_motorcycle(request, motorcycle_id):
                 motorcycle.company = company_obj
                 motorcycle.image = image_file
                 motorcycle.save()
-                messages.success(request, "Saved Succesfully")
+                messages.success(request, "Motorcycle saved")
                 return redirect('admin_motorcycle')
             except:
                 messages.error(request, "Error on Submit")
@@ -194,36 +191,40 @@ def edit_motorcycle(request, motorcycle_id):
                 motorcycle.anatomy_image = anatomy_image
                 motorcycle.image = image_file
                 motorcycle.save()
-                messages.success(request, "Saved Succesfully")
+                messages.success(request, "Motorcycle saved")
                 return redirect('admin_motorcycle')
             except:
-                messages.error(request, "Error on Submit")
-                return redirect('admin_motorcycle')
+               messages.error(request, "Error on Submit")
+            return redirect('admin_motorcycle')
         else:
             try:
                 motorcycle.name = name
                 motorcycle.company = company_obj
                 motorcycle.save()
-                messages.success(request, "Saved Succesfully")
+                messages.success(request, "Error on Submit")
                 return redirect('admin_motorcycle')
             except:
-                messages.error(request, "Error on Submit")
+                messages.success(request, "Error on Submit")
                 return redirect('admin_motorcycle')
 
-def delete_motorcycle(request, motorcycle_id):
-    motorcycle = Motorcycle.objects.get(id=motorcycle_id)
+@csrf_exempt
+def delete_motorcycle(request):
+    id = request.POST.get('id')
+    motorcycle = Motorcycle.objects.get(id=id)
 
     try:
         motorcycle.delete()
-        messages.success(request, "Deleted Succesfully")
-        return redirect('admin_motorcycle')
+        return JsonResponse({'status': 'success', 'message': 'Delete Success'})
     except:
-        messages.error(request, "Error on Submit")
-        return redirect('admin_motorcycle')
+        return JsonResponse({'status': 'error', 'message': 'Failed to Delete Motorcycle!'})
 
 def products(request):
     motorcycle = Motorcycle.objects.all()
-    products = Product.objects.all()
+    if 'search' in request.GET:
+        search = request.GET['search']
+        products = Product.objects.filter(name__icontains=search)
+    else:
+        products = Product.objects.all()
     categories = Category.objects.all()
     context = {
         "products": products,
@@ -232,6 +233,7 @@ def products(request):
     }
     return render(request, 'adminHOD/products.html', context)
 
+@csrf_exempt
 def admin_add_products(request):
     if request.method != "POST":
         messages.error(request, "Invalid Method ")
@@ -242,25 +244,24 @@ def admin_add_products(request):
         stock = request.POST.get('stock')
         motorcycle = request.POST.get('motorcycle')
         category = request.POST.get('category')
-        image_file = request.FILES['file']
+        image_file = request.FILES.get('file')
+        print(price)
 
         motorcycle_obj = Motorcycle.objects.get(id=motorcycle)
         category_obj = Category.objects.get(id=category)
 
         try:
-            product = Product(name=name, price=price, stock=stock,motorcycle=motorcycle_obj, category=category_obj, image = image_file )
+            product = Product(name=name, price=float(price), stock=int(stock),motorcycle=motorcycle_obj, category=category_obj, image = image_file )
             product.save()
-            messages.success(request, "Product Save Sucessfully")
-            return redirect('admin_products')
+            return JsonResponse({'status': 'success', 'message': 'Product Save Succesfully'})
         except Exception as e:
             print(e)
-            messages.success(request, "Error Saving Products")
-            return redirect('admin_products')
+            return JsonResponse({'status': 'error', 'message': 'Failed to Add Products!'})
 
 def admin_edit_products(request, product_id):
     if request.method != "POST":
         messages.error(request, "Invalid Method ")
-        return redirect('motorcycle')
+        return redirect('admin_products')
     else:
         product = Product.objects.get(id=product_id)
         name = request.POST.get('name')
@@ -272,9 +273,11 @@ def admin_edit_products(request, product_id):
         category = Category.objects.get(id=ct)
         image_file = None
         if len(request.FILES) != 0:
-            image_file = request.FILES['file']
+            image_file = request.FILES.get('file')
         else:
             image_file = None
+
+        print(product)
 
         if image_file == None:
             try:
@@ -284,11 +287,10 @@ def admin_edit_products(request, product_id):
                 product.motorcycle = motorcycle
                 product.category = category
                 product.save()
-                messages.success(request, "Saved Succesfully")
+                messages.success(request, "Product saved!")
                 return redirect('admin_products')
             except Exception as e:
-                print(e)
-                messages.error(request, "Error on Submit")
+                messages.error(request, "Product save Unsucessfull")
                 return redirect('admin_products')
         else:
             try:
@@ -299,23 +301,22 @@ def admin_edit_products(request, product_id):
                 product.category = category
                 product.image = image_file
                 product.save()
-                messages.success(request, "Saved Succesfully")
+                messages.success(request, "Product saved!")
                 return redirect('admin_products')
             except Exception as e:
-                print(e)
-                messages.error(request, "Error on Submit")
+                messages.error(request, "Product Save Unsucessfull")
                 return redirect('admin_products')
 
-def delete_products(request, product_id):
-    product = Product.objects.get(id=product_id)
+@csrf_exempt
+def delete_products(request):
+    id = request.POST.get('id')
+    product = Product.objects.get(id=id)
 
     try:
         product.delete()
-        messages.success(request, "Deleted Succesfully")
-        return redirect('admin_products')
+        return JsonResponse({'status': 'success', 'message': 'Delete Success'})
     except:
-        messages.error(request, "Error on Submit")
-        return redirect('admin_products')
+        return JsonResponse({'status': 'error', 'message': 'Failed to Delete Motorcycle!'})
 
 def admin_account(request):
     users_obj = Staff.objects.all()
@@ -390,9 +391,16 @@ def get_staff(request):
     staffs = Staffs.objects.all()
     print(staffs)
     data = []
+
     for staff in staffs:
-        data_small = {'id':staff.id, 'first_name': staff.admin.first_name, 'last_name':staff.admin.last_name, 'last_login': str(staff.admin.last_login), 'address':staff.address}
-        data.append(data_small)
+        if staff.admin.last_login != None:
+            date = staff.admin.last_login.strftime("%d %b, %Y %I:%M %p")
+            data_small = {'id':staff.id, 'first_name': staff.admin.first_name, 'last_name':staff.admin.last_name, 'last_login': str(date), 'address':staff.address}
+            data.append(data_small)
+        else:
+            date = 'None'
+            data_small = {'id':staff.id, 'first_name': staff.admin.first_name, 'last_name':staff.admin.last_name, 'last_login': str(date), 'address':staff.address}
+            data.append(data_small)
 
     return JsonResponse(json.dumps(data), content_type="application/json", safe=False)
 
@@ -452,3 +460,75 @@ def delete_staff(request, staff_id):
     except:
         messages.error(request, "Error on Submit")
         return redirect('staff')
+
+@csrf_exempt
+def get_sales(request):
+    date = datetime.now()
+
+    date_temp = []
+    data = []
+    transaction_obj = Transaction.objects.filter(date__year__gte=date.year,date__month__gte=date.month)
+
+    for t in transaction_obj:
+        month = t.date.month
+        year = t.date.year
+        day = t.date.day
+        string_date = str(day) +"-"+ str(month) +"-"+ str(year)
+        my_date = datetime.strptime(string_date, "%d-%m-%Y") + timedelta(milliseconds=300)
+        m = my_date.timestamp() * 1000.0
+        tr = transaction_obj.filter(date__day__gte=day, date__day__lte=day)
+        total = 0
+        for tr in tr:
+            total = total + float(tr.total)
+        result = next((item for item in data if item['date'] == m),{})
+        if result:
+            pass
+        else:
+            d = {"date":  m, "units": total}
+            data.append(d)
+
+    return JsonResponse(json.dumps(data), content_type="application/json", safe=False)
+
+def categories(request):
+    categories = Category.objects.all()
+
+    context = {
+        'categories':categories
+    }
+
+    return render(request, 'adminHOD/categories.html', context)
+
+@csrf_exempt
+def add_category(request):
+    category = request.POST.get('category')
+    try:
+        c = Category(name=category)
+        c.save()
+        return JsonResponse({'status': 'success', 'message': 'Category has been saved!!'})
+    except:
+        return JsonResponse({'status': 'error', 'message': 'Failed to add Category!'})
+
+def edit_category(request, category_id):
+    category = request.POST.get('name')
+
+    category_obj = Category.objects.get(id=category_id)
+
+    try:
+        category_obj.name = category
+        category_obj.save()
+        messages.success(request, "Category saved!")
+        return redirect('categories')
+    except:
+        messages.error(request, "Category failed to saved!")
+        return redirect('categories')
+
+@csrf_exempt
+def delete_category(request):
+    id = request.POST.get('id')
+    category = Category.objects.get(id=id)
+
+    try:
+        category.delete()
+        return JsonResponse({'status': 'success', 'message': 'Delete Success'})
+    except:
+        return JsonResponse({'status': 'error', 'message': 'Failed to Delete Category!'})

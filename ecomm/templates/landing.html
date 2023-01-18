@@ -23,9 +23,9 @@
                                   </div>
                                   <form class="p-4" action="{% url 'doLogin' %}"  method="POST">
                                     {% csrf_token %}
-                                      <div class="form-group mb-4"><input class="form-control" type="text" name="username" placeholder="Phone"></div>
+                                      <div class="form-group mb-4"><input class="form-control" type="text" name="username" placeholder="Email"></div>
                                       <div class="form-group mb-4"><input class="form-control" type="password" name="password" placeholder="Password"></div>
-                                      <div class="form-group mb-4"><button class="btn btn-primary d-block w-100" type="submit">LOGIN</button></div><a class="forgot" href="#">FORGOT PASSWORD?</a>
+                                      <div class="form-group mb-4"><button class="btn btn-primary d-block w-100" type="submit">LOGIN</button></div><a class="forgot" href="{% url 'forgot_password' %}">FORGOT PASSWORD?</a>
                                   </form>
                               </div>
                           </div>
@@ -46,7 +46,7 @@
                                   <form class="p-4" action="{% url 'signup' %}"  method="POST">
                                     {% csrf_token %}
                                       <div class="form-group mb-4">
-                                        <input class="form-control" type="text" id="username" name="username" placeholder="Phone">
+                                        <input class="form-control" type="email" id="username" name="username" placeholder="Email">
                                         <div id="phone_exist" class="form-text text-danger"></div>
                                       </div>
                                       <div class="form-group mb-4"><input class="form-control" type="text" name="first_name" placeholder="First Name"></div>
@@ -476,7 +476,7 @@
           data : {username:username},
           success: function(data){
             if(data.message == "True"){
-              phone_error = "This number is in use!";
+              phone_error = "This email is not available!";
               $("#phone_exist").text(phone_error);
             }else{
               phone_error = "";
@@ -490,5 +490,21 @@
     })
   });
 </script>
-
+{% if messages %}
+  <div class="form-group">
+  <div class="col-12">
+      {% for message in messages %}
+      {% if message.tags == "error" %}
+        <script>
+          toastr.error("{{ message }}")
+        </script>
+      {% elif message.tags == "success" %}
+          <script>
+            toastr.success("{{ message }}")
+          </script>
+      {% endif %}
+      {% endfor %}
+  </div>
+  </div>
+{% endif %}
 {% endblock custom_js %}

@@ -9,6 +9,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import FileSystemStorage
 from decimal import *
+from django.core.mail import send_mail
 
 class DecimalEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -19,7 +20,7 @@ class DecimalEncoder(json.JSONEncoder):
 def send_notification(phone, ref_code, cashier):
     client = Client(settings.ACCOUNT_SID, settings.ACCOUNT_SECURITY_API_KEY)
     message = client.messages.create(
-                              messaging_service_sid='MGfff7d060816fff6943af74d9cd59fc3b',
+                              messaging_service_sid='MGbb9a78b060ed13aa3891e1f2a264ba62',
                               body='Your order with reference code ' + str(ref_code) + ' is ready for pickup --' + str(cashier) + '-- Cashier Incharge',
                               to=phone
                           )
@@ -235,13 +236,23 @@ def orders(request):
 @csrf_exempt
 def get_orders(request):
     order = Order.objects.all()
+    user = request.user
+    staff = Staffs.objects.get(admin=user)
     data = []
     for order in order:
-        t = str(order.total)
-        total = Decimal(t)
-        print(total)
-        data_small = {"id": order.id, "ref_code": order.ref_code, "status": order.status, "total": total, "items": order.items, "first_name": order.user.admin.first_name, "last_name": order.user.admin.last_name}
-        data.append(data_small)
+        if order.status == "Packaging":
+            t = str(order.total)
+            total = Decimal(t)
+            data_small = {"id": order.id, "ref_code": order.ref_code, "status": order.status, "total": total, "items": order.items, "first_name": order.user.admin.first_name, "last_name": order.user.admin.last_name}
+            data.append(data_small)
+        else:
+            if order.proccessed_by == staff:
+                t = str(order.total)
+                total = Decimal(t)
+                data_small = {"id": order.id, "ref_code": order.ref_code, "status": order.status, "total": total, "items": order.items, "first_name": order.user.admin.first_name, "last_name": order.user.admin.last_name}
+                data.append(data_small)
+            else:
+                pass
 
     return JsonResponse(json.dumps(data, cls=DecimalEncoder), content_type="application/json", safe=False)
 
@@ -256,14 +267,18 @@ def get_orders_data(request):
 
 @csrf_exempt
 def set_ready(request):
+    user = request.user
+    staff = Staffs.objects.get(admin=user)
     order_id = request.POST.get('id')
     print(order_id)
     order = Order.objects.get(id = order_id)
     cashier = request.user.first_name+ ' ' + request.user.last_name
     try:
         order.status = "Ready For Pick Up"
+        order.proccessed_by = staff
         order.save()
-        send_notification(order.user.admin.username, order.ref_code, cashier)
+        message ='Your order with reference code ' + str(order.ref_code) + ' is ready for pickup Cashier Incharge ' + str(cashier)
+        send_mail('Bicol Speedtech Order Update',message,'speedtechb@gmail.com',[order.user.admin.username])
         return JsonResponse({'response':'success', 'message':'Order is ready for pick up!'})
     except Exception as e:
         print(e)

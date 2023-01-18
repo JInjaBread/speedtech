@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure--=@zy^t4n)=t4_owsz$^l_75zt@90yr2^o1z5u57bg1sl_tvt^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['speetech.herokuapp.com', '127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.humanize',
     'django.contrib.staticfiles',
     'ecomm.apps.EcommConfig',
 ]
@@ -116,10 +117,17 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 AUTH_USER_MODEL = "ecomm.CustomUser"
 
-ACCOUNT_SECURITY_API_KEY = 'fc4ded1174405989293364c9cc4debe3'
-ACCOUNT_SID = 'AC32054bd092c386314e03c476dc689c9e'
+ACCOUNT_SECURITY_API_KEY = '3bbe5983346859935b316cf48add175b'
+ACCOUNT_SID = 'ACe74a56ab8333a344e8674fd5ed992d9a'
 #AUTHENTICATION_BACKENDS = ['ecomm.PhoneBackend.PhoneBackend']
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'speedtechb@gmail.com'
+EMAIL_HOST_PASSWORD = 'dkgltfsmbqdijbyn'

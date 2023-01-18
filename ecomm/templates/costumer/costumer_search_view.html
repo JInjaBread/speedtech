@@ -1,0 +1,115 @@
+{% extends 'costumer/base.html' %}
+{% load static %}
+{% block content %}
+{% if messages %}
+  {% for message in messages %}
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="liveToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <strong class="me-auto">Speedtech</strong>
+        <small>Just Now</small>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        {{ message }}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+{% endif %}
+<div class="profile-card">
+      <div class="profile-back" style="background: rgb(254,0,2);"></div><img class="rounded-circle profile-pic" src="{% static 'costumer_templates/assets/img/150607784_1734378716914298_4521171664303503947_n.jpg' %}">
+      <h3 class="profile-name" style="background: rgb(254,0,2);">BICOL SPEEDTECH MOTOR CORP.&nbsp;</h3>
+      <p class="profile-bio">We sell motorcycle parts!</p>
+      <ul class="social-list">
+          <li> <i class="fa fa-facebook-official" style="background: rgb(254,0,2);"></i></li>
+          <li> <i class="fa fa-envelope" style="background: rgb(254,0,2);"></i></li>
+          <li> <i class="fa fa-phone-square" style="background: rgb(254,0,2);"></i></li>
+      </ul>
+  </div>
+  <div class="container">
+    <div class="row">
+        <div class="col">
+          <a class="btn-circle" href="{% url 'costumer_home' %}" style="margin-right: 0px;margin-left: 6px;"><i class="fa fa-home" style="color: #fe0002;font-size: 30px;"></i></a>
+          <a class="btn-circle" href="{% url 'cart' %}" style="margin-right: 0px;margin-left: 6px;" type="button"><i class="fa fa-shopping-cart" style="color: #fe0002;font-size: 30px;"></i><span class="badge bg-primary text-start float-end" style="background: var(--bs-pink);border-color: var(--bs-purple);">{{ cart.count }}</span></a>
+          <a class="btn-circle" href="{% url 'order' %}" style="margin-right: 0px;margin-left: 6px;" type="button"><i class="fa fa-inbox" style="color: #fe0002;font-size: 30px;"></i><span class="badge bg-primary text-start float-end" style="background: var(--bs-pink);border-color: var(--bs-purple);">{{ order_count }}</span></a>
+          <a class="btn-circle dropdown-toggle" type="button"id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 0px;background: #ffffff;border: 1px none;margin-right: 0px;margin-left: 6px;" type="button"><i class="fa fa-user" style="color: #fe0002;font-size: 30px;"></i></a>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li><a class="dropdown-item" href="{% url 'logout_user' %}">Logout</a></li>
+          </ul>
+        </div>
+        </div>
+          <div class="col-md-12">
+              <div class="row padMar">
+                  <div class="col padMar">
+                      <div class="input-group"><input class="form-control autocomplete" type="text" placeholder="Search"><button class="btn btn-warning" type="button" style="background: rgb(254,0,2);"><i class="fa fa-search"></i></button></div>
+                  </div>
+              </div>
+          </div>
+      <div class="row">
+          <div class="col-md-12" style="margin-top: 10px;">
+            <div class="container py-5">
+                <div class="row">
+                  {% for product in products %}
+                  <div class="col-sm-6 col-md-4 product-item">
+                    <div class="product-container">
+                        <div class="row">
+                            <div class="col-md-12"><a class="product-image" href="#"><img src="{{ product.image.url }}"></a></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8">
+                                <h2><a href="#">{{ product.name }}</a></h2>
+                            </div>
+                            <div class="col-4"><a class="small-text" href="#">{{ product.motorcycle }}</a></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <p class="product-description"> Available: {{ product.stock }}</p>
+                                <p class="product-description">Price: ₱ {{ product.price }}</p>
+                                <div class="row">
+                                    <div class="col-8"><button class="btn btn-light" type="button" onclick="add_to_cart({{product.id}})" ><i class="icon-trash"></i>&nbsp;<i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button></div>
+                                    <div class="col-4">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                  {% endfor %}
+                </div>
+          </div>
+        </div>
+      </div>
+  </div>
+{% endblock %}
+
+{% block custom_js %}
+<script>
+function add_to_cart(id){
+  var id = id;
+  $.ajax({
+    url: "{% url 'add_to_cart' %}",
+    type:"POST",
+    data:{
+      id:id
+    },
+    dataType: "json",
+    success:function(data){
+      console.log(data.response);
+      if(data.response == "success"){
+        toastr.success(data.message);
+        setTimeout(function () {
+        location.reload(true);
+      }, 2000);
+      }else{
+        toastr.info(data.message);
+      }
+    }
+  });
+}
+
+
+</script>
+{% endblock custom_js %}

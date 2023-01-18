@@ -36,6 +36,13 @@
             </a>
           </li>
           <li class="nav-item">
+            {% url 'categories' as categories %}
+            <a class="nav-link {% if request.path == categories %} active {% endif %}" href="{{ categories }}">
+              <i class="fas fa-bars	"></i>
+              <span>Category</span>
+            </a>
+          </li>
+          <li class="nav-item">
             {% url 'admin_products' as products %}
             <a class="nav-link {% if request.path == products %} active {% endif %} " href="{{ products }}">
               <i class="fas fa-database"></i><span>Products</span></a>

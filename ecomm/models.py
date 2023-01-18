@@ -93,6 +93,7 @@ class Order(models.Model):
     ref_code = models.CharField(max_length=20, blank=True, null=True)
     items = models.CharField(max_length=255)
     status = models.CharField(max_length=255, default="Packaging")
+    proccessed_by = models.ForeignKey(Staffs, on_delete=models.CASCADE, null=True)
     total = models.FloatField(default=0.0)
     ordered_date = models.DateTimeField(auto_now_add=True)
     ordered = models.BooleanField(default=False)
