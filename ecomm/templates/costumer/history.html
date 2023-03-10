@@ -40,47 +40,55 @@
           </ul>
         </div>
         </div>
-          <div class="col-md-12">
-              <div class="row padMar">
-                  <div class="col padMar">
-                      <div class="input-group"><input class="form-control autocomplete" type="text" placeholder="Search"><button class="btn btn-warning" type="button" style="background: rgb(254,0,2);"><i class="fa fa-search"></i></button></div>
+        <form action="">
+          {% csrf_token %}
+        <div class="col-md-12">
+            <div class="row padMar">
+                <div class="col padMar">
+                    <div class="input-group">
+                          <input class="form-control autocomplete" type="text" placeholder="Search" name="search">
+                          <button class="btn btn-warning" type="submit" style="background: rgb(254,0,2);"><i class="fa fa-search"></i></button>
                   </div>
-              </div>
-          </div>
+                </div>
+            </div>
+        </div>
+      </form>
       <div class="row">
           <div class="col-md-12" style="margin-top: 10px;">
-            <div class="container py-5">
-                <div class="row">
-                  {% for product in products %}
-                  <div class="col-sm-6 col-md-4 product-item">
-                    <div class="product-container">
-                        <div class="row">
-                            <div class="col-md-12"><a class="product-image" href="#"><img src="{{ product.image.url }}"></a></div>
-                        </div>
-                        <div class="row">
-                            <div class="col-8">
-                                <h2><a href="#">{{ product.name }}</a></h2>
-                            </div>
-                            <div class="col-4"><a class="small-text" href="#">{{ product.motorcycle }}</a></div>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">
-                                <p class="product-description"> Available: {{ product.stock }}</p>
-                                <p class="product-description">Price: ₱ {{ product.price }}</p>
-                                <div class="row">
-                                    <div class="col-8"><button class="btn btn-light" type="button" onclick="add_to_cart({{product.id}})" ><i class="icon-trash"></i>&nbsp;<i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button></div>
-                                    <div class="col-4">
+              <div>
+                <div class="container py-5">
+                  <div class="row">
+                    {% for product in products %}
+                    <div class="col-sm-6 col-md-4 product-item">
+                      <div class="product-container">
+                          <div class="row">
+                              <div class="col-md-12"><a class="product-image" href="#"><img src="{{ product.image.url }}"></a></div>
+                          </div>
+                          <div class="row">
+                              <div class="col-8">
+                                  <h2><a href="#">{{ product.name }}</a></h2>
+                              </div>
+                              <div class="col-4"><a class="small-text" href="#">{{ product.motorcycle }}</a></div>
+                          </div>
+                          <div class="row">
+                              <div class="col-12">
+                                  <p class="product-description"> Available: {{ product.stock }}</p>
+                                  <p class="product-description">Price: ₱ {{ product.price }}</p>
+                                  <div class="row">
+                                      <div class="col-8"><button class="btn btn-light" type="button" onclick="add_to_cart({{product.id}})" ><i class="icon-trash"></i>&nbsp;<i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button></div>
+                                      <div class="col-4">
 
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                    {% endfor %}
+                  </div>
                 </div>
-                  {% endfor %}
-                </div>
+              </div>
           </div>
-        </div>
       </div>
   </div>
 {% endblock %}

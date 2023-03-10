@@ -200,15 +200,18 @@ def make_order(request):
         total = total + price_2
     try:
         order = Order(user=user, ref_code=ref_code, total=total)
+
         for item in cart:
-            print(item.id)
             list = list + ", " +str(item)
+            history = History(user=user, item=item.item)
             product = Product.objects.get(id=item.item.id)
             product.stock = product.stock - item.quantity
+            history.save()
             product.save()
             item.delete()
         list = list[1:]
         order.items = list
+        history.save()
         order.save()
         return JsonResponse({'response':'success', 'message':'Order Success!'})
     except Exception as e:
@@ -224,3 +227,17 @@ def search_result(request, search):
         'products': products
     }
     return render(request, 'costumer/costumer_search_view.html', context)
+
+def history(request):
+    user = Costumer.objects.get(admin=request.user)
+    products = []
+    history = History.objects.filter(user=user)
+    for history in history:
+        if history.item not in products:
+            products.append(history.item)
+        else:
+            pass
+    context = {
+    'products': products
+    }
+    return render(request, 'costumer/history.html', context)

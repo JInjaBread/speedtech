@@ -37,7 +37,11 @@ urlpatterns = [
 	path('get_staff/', HODViews.get_staff, name="get_staff"),
 	path('add_staff/', HODViews.add_staff, name="add_staff"),
 	path('edit_staff/<staff_id>', HODViews.edit_staff, name="edit_staff"),
-	path('staff/delete_staff/<staff_id>', HODViews.delete_staff, name="delete_staff"),
+	path('staff/delete_staff/', HODViews.delete_staff, name="delete_staff"),
+	path('staff/deactivate_staff/', HODViews.deactivate_staff, name="deactivate_staff"),
+	path('costumer/', HODViews.costumer, name="costumer"),
+	path('get_costumer/', HODViews.get_costumer, name="get_costumer"),
+	path('deactivate_costumer/', HODViews.deactivate_costumer, name="deactivate_costumer"),
 	path('get_sales/', HODViews.get_sales, name="get_sales"),
 	path('categories/', HODViews.categories, name="categories"),
 	path('add_category/', HODViews.add_category, name="add_category"),
@@ -55,10 +59,10 @@ urlpatterns = [
 	path('remove_from_cart/<item_id>', CostumerViews.remove_from_cart, name="remove_from_cart"),
 	path('order', CostumerViews.order, name="order"),
 	path('make_order', CostumerViews.make_order, name="make_order"),
+	path('history', CostumerViews.history, name="history"),
 
 	#path for staffs
 	path('staff_home', StaffViews.staff_home, name="staff_home"),
-	path('costumer', StaffViews.costumer, name="costumer"),
 	path('company', StaffViews.company, name="company"),
 	path('add_company', StaffViews.add_company, name="add_company"),
 	path('edit_company/<company_id>', StaffViews.edit_company, name="edit_company"),
@@ -73,5 +77,6 @@ urlpatterns = [
 	path('set_ready', StaffViews.set_ready, name="set_ready"),
 	path('set_complete', StaffViews.set_complete, name="set_complete"),
 	path('cancel_order', StaffViews.cancel_order, name="cancel_order"),
+
 
 ]

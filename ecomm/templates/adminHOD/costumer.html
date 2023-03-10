@@ -177,7 +177,7 @@
 function load_order(){
   $.ajax({
     type:"GET",
-    url: "{% url 'get_staff' %}",
+    url: "{% url 'get_costumer' %}",
     dataType: "json",
     success: function(data){
       var n = JSON.parse(data);
@@ -194,12 +194,12 @@ function load_order(){
             if(row.status == true){
               return '<p>Activated</p>'
             }else{
-              return '<p>Deactivated</p>'
+              return '<p>Blocked</p>'
             }
           } },
           {data: "",
           mRender:function(data, type, row){
-              return '<button type="button" data-bs-toggle="modal" onclick="toggle_staff('+ row.id +')" class="btn btn-light"><i class="fa fa-ban" aria-hidden="true"></i></button> <button type="button" data-bs-toggle="modal" data-bs-target="#Edit'+ row.id +'" class="btn btn-light"><i class="fa fa-pencil" aria-hidden="true"></i></button> <a type="button"  href="delete_staff/'+row.id+'" class="btn btn-light"><i class="fa  fa-times" aria-hidden="true"></i></a>'
+              return '<button type="button" data-bs-toggle="modal" onclick="toggle_staff('+ row.id +')" class="btn btn-light"><i class="fa fa-ban" aria-hidden="true"></i></button> '
           }}
         ]
     });
@@ -212,7 +212,7 @@ function load_order(){
 function toggle_staff(id){
     var id = id;
     Swal.fire({
-      title: 'Do you want to toggle status of this staff?',
+      title: 'Do you want to toggle status of this user?',
       showDenyButton: true,
       showCancelButton: false,
       confirmButtonText: 'Yes',
@@ -227,7 +227,7 @@ function toggle_staff(id){
       if (result.isConfirmed) {
         $.ajax({
           type: "POST",
-         url: "{% url 'deactivate_staff' %}",
+         url: "{% url 'deactivate_costumer' %}",
          data: {
           'id': id
          },

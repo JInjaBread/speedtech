@@ -395,7 +395,7 @@ def get_staff(request):
     for staff in staffs:
         if staff.admin.last_login != None:
             date = staff.admin.last_login.strftime("%d %b, %Y %I:%M %p")
-            data_small = {'id':staff.id, 'first_name': staff.admin.first_name, 'last_name':staff.admin.last_name, 'last_login': str(date), 'address':staff.address}
+            data_small = {'id':staff.id, 'first_name': staff.admin.first_name, 'last_name':staff.admin.last_name, 'last_login': str(date),'status': staff.admin.is_active, 'address':staff.address}
             data.append(data_small)
         else:
             date = 'None'
@@ -460,6 +460,60 @@ def delete_staff(request, staff_id):
     except:
         messages.error(request, "Error on Submit")
         return redirect('staff')
+
+@csrf_exempt
+def deactivate_staff(request):
+    id = request.POST.get('id')
+    staff = Staffs.objects.get(id=id)
+    user = CustomUser.objects.get(id=staff.admin.id)
+    try:
+        if user.is_active == True:
+            user.is_active = False
+        else:
+            user.is_active = True
+        user.save()
+        return JsonResponse({'status': 'success', 'message': 'Staff Toggle Status Succesfully'})
+    except:
+        return JsonResponse({'status': 'error', 'message': 'Fail'})
+
+def costumer(request):
+    costumer = Costumer.objects.all()
+    context ={
+    'costumer': costumer
+    }
+    return render(request, 'adminHOD/costumer.html', context)
+
+@csrf_exempt
+def get_costumer(request):
+    costumer = Costumer.objects.all()
+    data = []
+
+    for costumer in costumer:
+        if costumer.admin.last_login != None:
+            date = costumer.admin.last_login.strftime("%d %b, %Y %I:%M %p")
+            data_small = {'id':costumer.id, 'first_name': costumer.admin.first_name, 'last_name':costumer.admin.last_name, 'last_login': str(date),'status': costumer.admin.is_active, 'address':costumer.address}
+            data.append(data_small)
+        else:
+            date = 'None'
+            data_small = {'id':costumer.id, 'first_name': costumer.admin.first_name, 'last_name':costumer.admin.last_name, 'last_login': str(date),'status': costumer.admin.is_active, 'address':costumer.address}
+            data.append(data_small)
+
+    return JsonResponse(json.dumps(data), content_type="application/json", safe=False)
+
+@csrf_exempt
+def deactivate_costumer(request):
+    id = request.POST.get('id')
+    costumer = Costumer.objects.get(id=id)
+    user = CustomUser.objects.get(id=costumer.admin.id)
+    try:
+        if user.is_active == True:
+            user.is_active = False
+        else:
+            user.is_active = True
+        user.save()
+        return JsonResponse({'status': 'success', 'message': 'User Toggle Status Succesfully'})
+    except:
+        return JsonResponse({'status': 'error', 'message': 'Fail'})
 
 @csrf_exempt
 def get_sales(request):

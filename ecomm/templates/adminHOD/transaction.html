@@ -93,15 +93,15 @@
                   </div>
                 </div>
                 <div class="row">
+                  <div class="col-4">
+                    <img class="rounded-circle" src="{% static 'staff_templates/assets/img/150607784_1734378716914298_4521171664303503947_n.jpg' %}" style="width: 100px;height: 100px;">&nbsp;
+                    <p id="sdate">Date: </p>
+                  </div>
                   <div class="col-8">
                     <h3>Bicol Speedtech Motor Corp.</h3>&nbsp;
                     <p>120 Magallanes Street, Legazpi City, Albay</p>
                     <p>Legazpi City, Albay 4500</p>
                     <p>+63527421168, bicolspeedtechb@gmail.com</p>
-                  </div>
-                  <div class="col-4">
-                    <img class="rounded-circle" src="{% static 'staff_templates/assets/img/150607784_1734378716914298_4521171664303503947_n.jpg' %}" style="width: 100px;height: 100px;">&nbsp;
-                    <p id="sdate">Date: </p>
                   </div>
                 </div>
                 <table class="table" id="example">
@@ -116,7 +116,7 @@
                     </tr>
                   </thead>
                   <tbody id="tbl_transaction">
-  
+
                   </tbody>
                 </table>
               </div>
@@ -208,11 +208,11 @@ $('#get_transaction').click(function(){
 function to_pdf(){
   const date = $('#start_date').val() + '-' + $('#end_date').val()
   $("#example").tableHTMLExport({
-  
+
   // csv, txt, json, pdf
   type:'pdf',
 
-  
+
   // file name
   filename:'sales_report'+date+'.pdf',
 

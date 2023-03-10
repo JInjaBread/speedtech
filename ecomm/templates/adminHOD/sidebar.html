@@ -22,6 +22,13 @@
             </a>
           </li>
           <li class="nav-item">
+            {% url 'costumer' as costumer %}
+            <a class="nav-link {% if request.path == costumer %} active {% endif %}" href="{{ costumer }}">
+              <i class="fas fa-user"></i>
+              <span>Costumer</span>
+            </a>
+          </li>
+          <li class="nav-item">
             {% url 'admin_company' as company %}
             <a class="nav-link {% if request.path == company %} active {% endif %}" href="{{ company }}">
               <i class="far fa-building"></i>

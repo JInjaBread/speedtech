@@ -75,9 +75,10 @@ def signup(request):
             message = "Your otp is " + str(otp_req)
             send_mail('Bicol Speedtech OTP',message,'speedtechb@gmail.com',[request.POST.get('username')])
             return redirect('verify_otp')
-        except:
+        except Exception as e:
+            print(e)
             messages.error(request, "Invalid Code!")
-            return redirect('home')
+            return redirect('verify_otp')
 
 def verify_otp(request):
     phone = request.session['phone']

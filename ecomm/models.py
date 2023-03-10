@@ -83,10 +83,11 @@ class OrderItem(models.Model):
     quantity = models.IntegerField(default=1)
 
     def __str__(self):
-        return f"({self.quantity}x){self.item.name}"
+        return f"({self.quantity}x){self.item.name}-{self.item.motorcycle}"
 
     def get_total_item_price(self):
         return self.quantity * self.item.price
+
 
 class Order(models.Model):
     user = models.ForeignKey(Costumer, on_delete=models.CASCADE)
@@ -100,6 +101,15 @@ class Order(models.Model):
 
     def split_order(self):
         return self.items.split(",")
+
+class History(models.Model):
+    user = models.ForeignKey(Costumer, on_delete=models.CASCADE)
+    ordered = models.BooleanField(default=False)
+    item = models.ForeignKey(Product, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.item.name}"
+
 
 class Transaction(models.Model):
     ref_code = models.CharField(max_length=255)
